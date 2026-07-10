@@ -5,82 +5,150 @@ const router = express.Router();
 
 const codes = {};
 
-router.post("/register", async (req, res) => {
+// временная база пользователей
+const users = {};
 
-  const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({
-      success: false,
-      message: "Email required"
-    });
-  }
+// проверка есть ли пользователь
+router.post("/check", (req, res)=>{
 
-  const code = Math.floor(100000 + Math.random() * 900000);
+    const { email } = req.body;
 
-  codes[email] = {
-    code,
-    expires: Date.now() + 5 * 60 * 1000
-  };
+    if(!email){
+        return res.status(400).json({
+            success:false,
+            message:"Email required"
+        });
+    }
 
-  try {
-
-    await sendCode(email, code);
 
     res.json({
-      success: true,
-      message: "Code sent"
+        exists: !!users[email]
     });
-
-  } catch (error) {
-
-    console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Email error"
-    });
-
-  }
 
 });
 
-router.post("/verify", (req, res) => {
 
-  const { email, code } = req.body;
 
-  const saved = codes[email];
+// отправка кода
+router.post("/register", async (req,res)=>{
 
-  if (!saved) {
-    return res.status(400).json({
-      success:false,
-      message:"Code not found"
-    });
-  }
+    const { email } = req.body;
 
-  if (Date.now() > saved.expires) {
+
+    if(!email){
+        return res.status(400).json({
+            success:false,
+            message:"Email required"
+        });
+    }
+
+
+    const code =
+    Math.floor(100000 + Math.random() * 900000);
+
+
+    codes[email] = {
+        code,
+        expires: Date.now() + 5 * 60 * 1000
+    };
+
+
+    try{
+
+        await sendCode(email, code);
+
+
+        res.json({
+            success:true,
+            message:"Code sent"
+        });
+
+
+    }catch(error){
+
+        console.log(error);
+
+        res.status(500).json({
+            success:false,
+            message:"Email error"
+        });
+
+    }
+
+});
+
+
+
+// проверка кода
+router.post("/verify",(req,res)=>{
+
+
+    const { email, code } = req.body;
+
+
+    const saved = codes[email];
+
+
+    if(!saved){
+
+        return res.status(400).json({
+            success:false,
+            message:"Code not found"
+        });
+
+    }
+
+
+
+    if(Date.now() > saved.expires){
+
+        delete codes[email];
+
+
+        return res.status(400).json({
+            success:false,
+            message:"Code expired"
+        });
+
+    }
+
+
+
+    if(String(saved.code) !== String(code)){
+
+
+        return res.status(400).json({
+            success:false,
+            message:"Wrong code"
+        });
+
+    }
+
+
+
     delete codes[email];
 
-    return res.status(400).json({
-      success:false,
-      message:"Code expired"
+
+    // создаём пользователя после подтверждения
+    users[email] = {
+        email,
+        created: Date.now()
+    };
+
+
+
+    res.json({
+
+        success:true,
+
+        message:"Email verified"
+
     });
-  }
 
-  if (String(saved.code) !== String(code)) {
-    return res.status(400).json({
-      success:false,
-      message:"Wrong code"
-    });
-  }
-
-  delete codes[email];
-
-  res.json({
-    success:true,
-    message:"Email verified"
-  });
 
 });
+
+
 
 module.exports = router;

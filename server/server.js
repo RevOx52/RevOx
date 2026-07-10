@@ -1,27 +1,63 @@
 require("dotenv").config();
 
 const express = require("express");
-const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-
-const authRoute = require("./routes/auth");
-app.use("/api/auth", authRoute);
-
-app.get("/api/status", (req, res) => {
-  res.json({
-    success: true,
-    app: process.env.APP_NAME || "RevOx",
-    version: "0.1",
-    status: "online"
-  });
-});
-
 const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, () => {
-  console.log(`${process.env.APP_NAME || "RevOx"} server started on port ${PORT}`);
+
+// JSON
+app.use(express.json());
+
+
+// Статика (HTML, JS, CSS)
+app.use(express.static(
+    path.join(__dirname, "public")
+));
+
+
+// API авторизации
+const authRoute = require("./routes/auth");
+
+app.use("/api/auth", authRoute);
+
+
+// Проверка сервера
+app.get("/api", (req, res)=>{
+
+    res.json({
+
+        success:true,
+        app:"RevOx",
+        version:"0.1",
+        status:"online"
+
+    });
+
+});
+
+
+// Главная страница
+app.get("/", (req,res)=>{
+
+    res.sendFile(
+        path.join(
+            __dirname,
+            "public",
+            "index.html"
+        )
+    );
+
+});
+
+
+// Запуск
+app.listen(PORT, ()=>{
+
+    console.log(
+        `RevOx server started on port ${PORT}`
+    );
+
 });

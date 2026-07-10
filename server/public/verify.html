@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RevOx Verify</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="screen">
+
+<div class="card">
+
+<div class="logo">
+RevOx
+</div>
+
+<h1>
+Подтверждение
+</h1>
+
+<p class="hint">
+Введите код из письма
+</p>
+
+
+<div class="code-boxes">
+
+<input id="c1" maxlength="1" inputmode="numeric">
+<input id="c2" maxlength="1" inputmode="numeric">
+<input id="c3" maxlength="1" inputmode="numeric">
+<input id="c4" maxlength="1" inputmode="numeric">
+<input id="c5" maxlength="1" inputmode="numeric">
+<input id="c6" maxlength="1" inputmode="numeric">
+
+</div>
+
+
+<button id="verifyBtn">
+Продолжить
+</button>
+
+
+<p id="timer">
+Повторная отправка через 60 сек
+</p>
+
+
+<button id="resend" style="display:none">
+Отправить снова
+</button>
+
+
+<p id="status"></p>
+
+
+</div>
+
+</div>
+
+
+<script src="verify.js"></script>
+
+</body>
+</html>
