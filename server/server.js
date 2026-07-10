@@ -11,7 +11,7 @@ app.use(express.json());
 app.get("/api/status", (req, res) => {
   res.json({
     success: true,
-    app: process.env.APP_NAME,
+    app: process.env.APP_NAME || "RevOx",
     version: "0.1",
     status: "online"
   });
@@ -20,5 +20,5 @@ app.get("/api/status", (req, res) => {
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-  console.log(`${process.env.APP_NAME} server started on ${PORT}`);
+  console.log(`${process.env.APP_NAME || "RevOx"} server started on port ${PORT}`);
 });
