@@ -41,3 +41,29 @@ button {
   bottom:30px;
   color:#666;
 }
+
+.card {
+ background:#17171f;
+ padding:30px;
+ border-radius:24px;
+ width:300px;
+}
+
+input {
+ width:100%;
+ padding:14px;
+ margin:20px 0;
+ border-radius:14px;
+ border:0;
+ background:#0b0b0f;
+ color:white;
+}
+
+h2 {
+ margin:0;
+}
+
+#status {
+ color:#aaa;
+}
+
