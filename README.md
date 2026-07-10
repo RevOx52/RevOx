@@ -1,10 +1,10 @@
 # RevOx App
 
-Android client for RevOx Messenger.
+UI concept:
 
-Features:
-- Authentication
-- Chats
-- Messages
-- Profiles
-- Real-time communication
+- Dark theme
+- Glass style
+- Rounded elements
+- Messenger navigation
+- Secure login
+- Real-time chats
