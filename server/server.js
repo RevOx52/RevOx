@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 
@@ -9,14 +11,14 @@ app.use(express.json());
 app.get("/api/status", (req, res) => {
   res.json({
     success: true,
-    app: "RevOx",
+    app: process.env.APP_NAME,
     version: "0.1",
     status: "online"
   });
 });
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-  console.log(`RevOx server started on port ${PORT}`);
+  console.log(`${process.env.APP_NAME} server started on ${PORT}`);
 });
