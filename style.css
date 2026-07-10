@@ -1,0 +1,63 @@
+body {
+  margin:0;
+  background:#0b0b0f;
+  color:white;
+  font-family:Arial,sans-serif;
+}
+
+.app {
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+header {
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+h1 {
+  margin:0;
+  font-size:28px;
+}
+
+.search {
+  background:#17171f;
+  color:white;
+  border:0;
+  border-radius:50%;
+  width:45px;
+  height:45px;
+  font-size:24px;
+}
+
+.chats {
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.empty {
+  color:#777;
+  font-size:18px;
+}
+
+nav {
+  height:70px;
+  background:#15151d;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-radius:25px 25px 0 0;
+}
+
+nav div {
+  color:#888;
+}
+
+nav .active {
+  color:white;
+}
