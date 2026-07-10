@@ -8,6 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const authRoute = require("./routes/auth");
+app.use("/api/auth", authRoute);
+
 app.get("/api/status", (req, res) => {
   res.json({
     success: true,
