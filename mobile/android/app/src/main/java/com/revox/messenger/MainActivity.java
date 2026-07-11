@@ -1,11 +1,11 @@
 package com.revox.messenger;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.graphics.Color;
-import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
