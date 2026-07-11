@@ -1,82 +1,24 @@
 package com.revox.messenger
 
+import android.app.Activity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import android.widget.TextView
+import android.graphics.Color
+import android.view.Gravity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            RevOxApp()
-        }
-    }
-}
+        val text = TextView(this)
 
-@Composable
-fun RevOxApp() {
+        text.text = "RevOx\n\nNative Android"
+        text.textSize = 30f
+        text.setTextColor(Color.WHITE)
+        text.setBackgroundColor(Color.BLACK)
+        text.gravity = Gravity.CENTER
 
-    MaterialTheme {
-
-        Surface(
-            modifier = Modifier.fillMaxSize()
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-
-                horizontalAlignment = Alignment.CenterHorizontally,
-
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                Text(
-                    text = "🦆",
-                    fontSize = 64.sp
-                )
-
-                Spacer(
-                    modifier = Modifier.height(20.dp)
-                )
-
-                Text(
-                    text = "RevOx",
-                    fontSize = 40.sp
-                )
-
-                Spacer(
-                    modifier = Modifier.height(40.dp)
-                )
-
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
-                    label = {
-                        Text("Email")
-                    }
-                )
-
-                Spacer(
-                    modifier = Modifier.height(20.dp)
-                )
-
-                Button(
-                    onClick = {}
-                ) {
-                    Text("Continue")
-                }
-            }
-        }
+        setContentView(text)
     }
 }
