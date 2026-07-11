@@ -1,17 +1,18 @@
 workflows:
-  android-debug:
-    name: RevOx Build APK
+  android-build:
+    name: RevOx Android APK
+
+    max_build_duration: 60
 
     environment:
-      java: 17
+      java: 21
 
     scripts:
-
-      - name: Install Node packages
+      - name: Install root dependencies
         script: |
           npm install
 
-      - name: Install mobile packages
+      - name: Install mobile dependencies
         script: |
           cd mobile
           npm install
