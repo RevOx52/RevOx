@@ -1,15 +1,17 @@
 workflows:
-  android-build:
-    name: RevOx Android Build
-
-    max_build_duration: 60
+  android-debug:
+    name: RevOx Build APK
 
     environment:
-      node: latest
-      java: 21
+      java: 17
 
     scripts:
-      - name: Install Node dependencies
+
+      - name: Install Node packages
+        script: |
+          npm install
+
+      - name: Install mobile packages
         script: |
           cd mobile
           npm install
@@ -21,10 +23,4 @@ workflows:
           ./gradlew assembleDebug
 
     artifacts:
-      - mobile/android/app/build/outputs/**/*.apk
-
-    cache:
-      cache_paths:
-        - ~/.gradle/caches
-        - ~/.gradle/wrapper
-        - mobile/node_modules
+      - mobile/android/app/build/outputs/apk/debug/*.apk
