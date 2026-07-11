@@ -3,6 +3,9 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 
+const database = require("./database");
+
+
 const app = express();
 
 const PORT = process.env.PORT || 8080;
@@ -12,7 +15,7 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 
 
-// Статика (HTML, JS, CSS)
+// Статика
 app.use(express.static(
     path.join(__dirname, "public")
 ));
@@ -21,11 +24,14 @@ app.use(express.static(
 // API авторизации
 const authRoute = require("./routes/auth");
 
-app.use("/api/auth", authRoute);
+app.use(
+    "/api/auth",
+    authRoute
+);
 
 
 // Проверка сервера
-app.get("/api", (req, res)=>{
+app.get("/api", (req,res)=>{
 
     res.json({
 
@@ -43,21 +49,43 @@ app.get("/api", (req, res)=>{
 app.get("/", (req,res)=>{
 
     res.sendFile(
+
         path.join(
             __dirname,
             "public",
             "index.html"
         )
+
     );
 
 });
 
 
-// Запуск
-app.listen(PORT, ()=>{
+// Запуск после загрузки базы
+
+database.initDatabase()
+.then(()=>{
+
+
+    app.listen(PORT, ()=>{
+
+
+        console.log(
+            `RevOx server started on port ${PORT}`
+        );
+
+
+    });
+
+
+})
+.catch((error)=>{
+
 
     console.log(
-        `RevOx server started on port ${PORT}`
+        "Database error:",
+        error
     );
+
 
 });
