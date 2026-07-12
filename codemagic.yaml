@@ -1,21 +1,27 @@
 workflows:
   android-build:
-    name: RevOx Android Build
+    name: RevOx Android Release Build
 
     environment:
       android_signing:
         - revox
 
     scripts:
+
+      - name: Check project
+        script: |
+          ls
+          ls android
+
       - name: Build APK
         script: |
           cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          chmod +x ./gradlew
+          ./gradlew assembleRelease
 
       - name: Rename APK
         script: |
-          mv android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/RevOx.apk
+          mv android/app/build/outputs/apk/release/app-release.apk android/app/build/outputs/apk/release/RevOx.apk
 
     artifacts:
-      - android/app/build/outputs/apk/debug/RevOx.apk
+      - android/app/build/outputs/apk/release/RevOx.apk
