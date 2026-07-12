@@ -1,54 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#0B0B0F">
+xmlns:android="http://schemas.android.com/apk/res/android"
+
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+
+android:background="#08090D">
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:gravity="center">
+<LinearLayout
+
+android:layout_width="wrap_content"
+
+android:layout_height="wrap_content"
+
+android:layout_centerInParent="true"
+
+android:orientation="vertical"
+
+android:gravity="center">
 
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/revox_logo"
-            android:contentDescription="RevOx"/>
+
+<ImageView
+
+android:id="@+id/logo"
+
+android:layout_width="140dp"
+
+android:layout_height="140dp"
+
+android:src="@drawable/revox_logo"/>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="RevOx"
-            android:textSize="38sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="20dp"/>
+
+<TextView
+
+android:layout_width="wrap_content"
+
+android:layout_height="wrap_content"
+
+android:text="RevOx"
+
+android:textColor="#FFFFFF"
+
+android:textSize="48sp"
+
+android:textStyle="bold"
+
+android:layout_marginTop="25dp"/>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Secure Messenger"
-            android:textSize="16sp"
-            android:textColor="#A1A1AA"
-            android:layout_marginTop="8dp"/>
+
+<TextView
+
+android:layout_width="wrap_content"
+
+android:layout_height="wrap_content"
+
+android:text="Secure Messenger"
+
+android:textColor="#9CA3AF"
+
+android:textSize="17sp"
+
+android:layout_marginTop="8dp"/>
 
 
-        <ProgressBar
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="35dp"/>
+
+<ProgressBar
+
+android:layout_width="45dp"
+
+android:layout_height="45dp"
+
+android:layout_marginTop="45dp"/>
 
 
-    </LinearLayout>
+
+</LinearLayout>
+
+
+<TextView
+
+android:layout_width="wrap_content"
+
+android:layout_height="wrap_content"
+
+android:text="RevOx Alpha"
+
+android:textColor="#555560"
+
+android:textSize="13sp"
+
+android:layout_alignParentBottom="true"
+
+android:layout_centerHorizontal="true"
+
+android:layout_marginBottom="35dp"/>
 
 
 </RelativeLayout>
