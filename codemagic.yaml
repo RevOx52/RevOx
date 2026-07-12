@@ -4,7 +4,7 @@ workflows:
 
     environment:
       android_signing:
-        - debug_keystore
+        - revox
 
     scripts:
       - name: Build APK
