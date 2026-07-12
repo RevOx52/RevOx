@@ -24,4 +24,4 @@ workflows:
           ./gradlew assembleDebug
 
     artifacts:
-      - mobile/android/app/build/outputs/apk/debug/*.apk
+      - mobile/android/app/build/outputs/apk/RevOx/*.apk
