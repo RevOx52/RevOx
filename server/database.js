@@ -1,112 +1,66 @@
-const initSqlJs = require("sql.js");
-const fs = require("fs");
+const { execFile } = require("child_process");
+
+const db = "users.db";
 
 
-let db;
+function query(sql){
 
+    return new Promise((resolve,reject)=>{
 
+        execFile(
+            "sqlite3",
+            [
+                "-json",
+                db,
+                sql
+            ],
+            (error,stdout)=>{
 
-async function initDatabase(){
+                if(error){
+                    reject(error);
+                    return;
+                }
 
+                try {
+                    resolve(JSON.parse(stdout || "[]"));
+                } catch {
+                    resolve([]);
+                }
 
-    const SQL = await initSqlJs();
-
-
-
-    if(fs.existsSync("./database/users.sqlite")){
-
-
-        const file =
-        fs.readFileSync("./database/users.sqlite");
-
-
-        db =
-        new SQL.Database(file);
-
-
-
-    } else {
-
-
-
-        db =
-        new SQL.Database();
-
-
-
-        db.run(`
-
-        CREATE TABLE users (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            email TEXT UNIQUE NOT NULL,
-
-            first_name TEXT,
-
-            last_name TEXT,
-
-            password TEXT,
-
-            created_at TEXT
-
+            }
         );
 
-        `);
-
-
-
-        saveDatabase();
-
-    }
-
-
-
-    console.log("Database loaded");
+    });
 
 }
 
 
+function run(sql){
 
+    return new Promise((resolve,reject)=>{
 
-function saveDatabase(){
+        execFile(
+            "sqlite3",
+            [
+                db,
+                sql
+            ],
+            (error)=>{
 
+                if(error)
+                    reject(error);
+                else
+                    resolve(true);
 
-    const data =
-    db.export();
+            }
+        );
 
-
-    fs.writeFileSync(
-
-        "./database/users.sqlite",
-
-        Buffer.from(data)
-
-    );
-
-
-}
-
-
-
-
-
-function getDB(){
-
-    return db;
+    });
 
 }
-
-
-
 
 
 module.exports = {
-
-    initDatabase,
-
-    getDB,
-
-    saveDatabase
-
+    query,
+    run
 };

@@ -1,28 +1,82 @@
+const express = require("express");
+const cors = require("cors");
+const http = require("http");
 require("dotenv").config();
 
-const express = require("express");
-const path = require("path");
 
-const database = require("./database");
+const authRoute = require("./routes/auth");
+const userRoute = require("./routes/user");
+const chatsRoute = require("./routes/chats");
+const messagesRoute = require("./routes/messages");
+
+const {
+    initSocket
+} = require("./socket/socket");
+
 
 
 const app = express();
 
-const PORT = process.env.PORT || 8080;
 
 
-// JSON
+app.use(cors());
+
 app.use(express.json());
 
 
-// Статика
-app.use(express.static(
-    path.join(__dirname, "public")
-));
+
+// HTTP сервер
+
+const server =
+    http.createServer(app);
 
 
-// API авторизации
-const authRoute = require("./routes/auth");
+
+// Socket.io
+
+const io =
+    initSocket(server);
+
+
+
+// передаём socket в API
+
+app.use(
+    (req,res,next)=>{
+
+        req.io = io;
+
+        next();
+
+    }
+);
+
+
+
+// проверка
+
+app.get(
+    "/",
+    (req,res)=>{
+
+
+        res.json({
+
+            app:"RevOx",
+
+            status:"online",
+
+            socket:true
+
+        });
+
+
+    }
+);
+
+
+
+// API
 
 app.use(
     "/api/auth",
@@ -30,62 +84,43 @@ app.use(
 );
 
 
-// Проверка сервера
-app.get("/api", (req,res)=>{
-
-    res.json({
-
-        success:true,
-        app:"RevOx",
-        version:"0.1",
-        status:"online"
-
-    });
-
-});
+app.use(
+    "/api/user",
+    userRoute
+);
 
 
-// Главная страница
-app.get("/", (req,res)=>{
-
-    res.sendFile(
-
-        path.join(
-            __dirname,
-            "public",
-            "index.html"
-        )
-
-    );
-
-});
+app.use(
+    "/api/chats",
+    chatsRoute
+);
 
 
-// Запуск после загрузки базы
+app.use(
+    "/api/messages",
+    messagesRoute
+);
 
-database.initDatabase()
-.then(()=>{
 
 
-    app.listen(PORT, ()=>{
+
+// запуск
+
+const PORT =
+    process.env.PORT || 8080;
+
+
+
+server.listen(
+    PORT,
+    "0.0.0.0",
+    ()=>{
 
 
         console.log(
-            `RevOx server started on port ${PORT}`
+            `RevOx server running on ${PORT}`
         );
 
 
-    });
-
-
-})
-.catch((error)=>{
-
-
-    console.log(
-        "Database error:",
-        error
-    );
-
-
-});
+    }
+);
