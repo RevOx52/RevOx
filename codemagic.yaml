@@ -6,13 +6,9 @@ workflows:
       android_signing:
         - revox
 
-      java: 21
-
     scripts:
-
       - name: Install dependencies
         script: |
-          cd mobile
           npm install
 
       - name: Sync Capacitor
@@ -26,14 +22,14 @@ workflows:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Find APK
+      - name: Sign APK
         script: |
-          find mobile/android -name "*.apk"
+          $CM_BUILD_DIR/signing/verify_apk.sh
 
       - name: Rename APK
         script: |
-          APK=$(find mobile/android -name "*.apk" | head -n 1)
-          cp "$APK" mobile/android/RevOx.apk
+          mv mobile/android/app/build/outputs/apk/release/app-release.apk \
+          mobile/android/app/build/outputs/apk/release/RevOx.apk
 
     artifacts:
-      - mobile/android/RevOx.apk
+      - mobile/android/app/build/outputs/apk/release/RevOx.apk
