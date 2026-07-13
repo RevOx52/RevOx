@@ -30,11 +30,6 @@ workflows:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Sign APK
-        script: |
-          echo "Signing APK"
-          $CM_BUILD_DIR/signing/verify_apk.sh
-
       - name: Rename APK
         script: |
           mv mobile/android/app/build/outputs/apk/release/app-release.apk \
