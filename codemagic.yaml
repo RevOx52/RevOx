@@ -10,14 +10,12 @@ workflows:
 
       - name: Install dependencies
         script: |
+          cd mobile
           npm install
-
-      - name: Install Capacitor CLI
-        script: |
-          npm install --save-dev @capacitor/cli
 
       - name: Sync Capacitor
         script: |
+          cd mobile
           npx cap sync android
 
       - name: Build APK
