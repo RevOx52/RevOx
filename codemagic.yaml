@@ -8,9 +8,6 @@ workflows:
       android_signing:
         - revox
 
-      vars:
-        PACKAGE_NAME: "com.revox.messenger"
-
     scripts:
 
       - name: Install dependencies
@@ -30,10 +27,14 @@ workflows:
           chmod +x gradlew
           ./gradlew assembleRelease
 
+      - name: Find APK
+        script: |
+          find mobile/android -name "*.apk"
+
       - name: Rename APK
-  script: |
-    APK=$(find mobile/android -name "*.apk" | head -1)
-    cp "$APK" mobile/android/app/build/outputs/apk/release/RevOx.apk
+        script: |
+          APK=$(find mobile/android -name "*.apk" | head -1)
+          cp "$APK" mobile/android/app/build/outputs/apk/release/RevOx.apk
 
     artifacts:
       - mobile/android/app/build/outputs/apk/release/RevOx.apk
