@@ -6,10 +6,16 @@ workflows:
       android_signing:
         - revox
 
+      vars:
+        PACKAGE_NAME: "com.revox.messenger"
+
     scripts:
+
       - name: Install dependencies
         script: |
+          cd mobile
           npm install
+          npm install @capacitor/core @capacitor/cli @capacitor/android
 
       - name: Sync Capacitor
         script: |
@@ -24,6 +30,7 @@ workflows:
 
       - name: Sign APK
         script: |
+          echo "Signing APK"
           $CM_BUILD_DIR/signing/verify_apk.sh
 
       - name: Rename APK
