@@ -1,135 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-
-android:orientation="vertical"
-android:gravity="center"
-
-android:padding="32dp"
-
-android:background="#08090D">
-
-
-<ImageView
-
-android:layout_width="110dp"
-android:layout_height="110dp"
-
-android:src="@drawable/revox_logo"
-
-android:layout_marginBottom="20dp"/>
-
-
-
-<TextView
-
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-
-android:text="RevOx"
-
-android:textColor="#FFFFFF"
-
-android:textSize="42sp"
-
-android:textStyle="bold"/>
-
-
-
-<TextView
-
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-
-android:text="Secure Messenger"
-
-android:textColor="#9CA3AF"
-
-android:textSize="16sp"
-
-android:layout_marginBottom="40dp"/>
-
-
-
-<EditText
-
-android:id="@+id/email"
-
-android:layout_width="match_parent"
-
-android:layout_height="55dp"
-
-android:hint="Email"
-
-android:textColor="#FFFFFF"
-
-android:textColorHint="#8B8B95"
-
-android:padding="16dp"
-
-android:backgroundTint="#7C3CFF"/>
-
-
-
-<EditText
-
-android:id="@+id/password"
-
-android:layout_width="match_parent"
-
-android:layout_height="55dp"
-
-android:layout_marginTop="15dp"
-
-android:hint="Пароль"
-
-android:inputType="textPassword"
-
-android:textColor="#FFFFFF"
-
-android:textColorHint="#8B8B95"
-
-android:padding="16dp"
-
-android:backgroundTint="#7C3CFF"/>
-
-
-
-<Button
-
-android:id="@+id/loginButton"
-
-android:layout_width="match_parent"
-
-android:layout_height="55dp"
-
-android:layout_marginTop="30dp"
-
-android:text="Войти"
-
-android:textSize="17sp"
-
-android:textColor="#FFFFFF"
-
-android:backgroundTint="#7C3CFF"/>
-
-
-
-<TextView
-
-android:id="@+id/error"
-
-android:layout_width="wrap_content"
-
-android:layout_height="wrap_content"
-
-android:textColor="#FF5555"
-
-android:layout_marginTop="15dp"/>
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="#101014">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/revox_logo"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RevOx"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="25dp"/>
+
+    <EditText
+        android:id="@+id/emailInput"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"/>
+
+    <Button
+        android:id="@+id/continueButton"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="Продолжить"
+        android:layout_marginTop="20dp"/>
 
 </LinearLayout>
