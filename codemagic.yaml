@@ -7,6 +7,15 @@ workflows:
         - revox
 
     scripts:
+
+      - name: Install dependencies
+        script: |
+          npm install
+
+      - name: Sync Capacitor
+        script: |
+          npx cap sync android
+
       - name: Build APK
         script: |
           cd mobile/android
