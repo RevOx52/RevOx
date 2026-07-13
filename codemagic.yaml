@@ -6,6 +6,8 @@ workflows:
       android_signing:
         - revox
 
+      java: 21
+
     scripts:
 
       - name: Install dependencies
