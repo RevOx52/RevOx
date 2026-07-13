@@ -31,9 +31,9 @@ workflows:
           ./gradlew assembleRelease
 
       - name: Rename APK
-        script: |
-          mv mobile/android/app/build/outputs/apk/release/app-release.apk \
-          mobile/android/app/build/outputs/apk/release/RevOx.apk
+  script: |
+    APK=$(find mobile/android -name "*.apk" | head -1)
+    cp "$APK" mobile/android/app/build/outputs/apk/release/RevOx.apk
 
     artifacts:
       - mobile/android/app/build/outputs/apk/release/RevOx.apk
