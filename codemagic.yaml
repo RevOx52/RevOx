@@ -3,6 +3,8 @@ workflows:
     name: RevOx Android Release Build
 
     environment:
+      java: 21
+
       android_signing:
         - revox
 
