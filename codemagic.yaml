@@ -7,21 +7,38 @@ workflows:
         - revox
 
     scripts:
-
-      - name: Check project
+      - name: Show current directory
         script: |
-          ls
-          ls android
+          echo "Current directory:"
+          pwd
+
+          echo "Files:"
+          ls -la
+
+          echo "Searching gradlew..."
+          find . -name gradlew
 
       - name: Build APK
         script: |
-          cd android
-          chmod +x ./gradlew
-          ./gradlew assembleRelease
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew assembleRelease
+          elif [ -f "./android/gradlew" ]; then
+            cd android
+            chmod +x ./gradlew
+            ./gradlew assembleRelease
+          else
+            echo "ERROR: gradlew not found!"
+            exit 1
+          fi
 
       - name: Rename APK
         script: |
-          mv android/app/build/outputs/apk/release/app-release.apk android/app/build/outputs/apk/release/RevOx.apk
+          APK=$(find . -name "app-release.apk" | head -n 1)
+          if [ -n "$APK" ]; then
+            DIR=$(dirname "$APK")
+            mv "$APK" "$DIR/RevOx.apk"
+          fi
 
     artifacts:
-      - android/app/build/outputs/apk/release/RevOx.apk
+      - "**/RevOx.apk"
