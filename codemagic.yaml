@@ -14,42 +14,48 @@ workflows:
         script: |
           cd mobile
           npm install
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install @capacitor/android @capacitor/core @capacitor/cli
 
       - name: Sync Capacitor
         script: |
           cd mobile
           npx cap sync android
 
-      - name: Build Release APK
+      - name: Build APK
         script: |
           cd mobile/android
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Sign APK
+      - name: Find APK
         script: |
-          APK=app/build/outputs/apk/release/app-release-unsigned.apk
+          echo "Searching APK files..."
+          find mobile/android -name "*.apk"
 
-          if [ ! -f "$APK" ]; then
-            APK=$(find app/build/outputs/apk -name "*.apk" | head -1)
-          fi
-
-          echo "Signing: $APK"
-
-          $CM_BUILD_DIR/signing/sign_apk.sh "$APK"
-
-      - name: Rename APK
+      - name: Sign APK
         script: |
           APK=$(find mobile/android/app/build/outputs/apk -name "*.apk" | head -1)
 
+          echo "Signing:"
+          echo "$APK"
+
+          $ANDROID_HOME/build-tools/36.0.0/apksigner sign \
+            --ks $CM_KEYSTORE_PATH \
+            --ks-key-alias $CM_KEY_ALIAS \
+            --ks-pass pass:$CM_KEYSTORE_PASSWORD \
+            --key-pass pass:$CM_KEY_PASSWORD \
+            "$APK"
+
+          echo "Checking signature..."
+          $ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose "$APK"
+
+      - name: Prepare APK
+        script: |
           mkdir -p output
 
-          cp "$APK" output/RevOx.apk
+          APK=$(find mobile/android/app/build/outputs/apk -name "*.apk" | head -1)
 
-      - name: Verify APK
-        script: |
-          $ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose output/RevOx.apk
+          cp "$APK" output/RevOx.apk
 
     artifacts:
       - output/RevOx.apk
