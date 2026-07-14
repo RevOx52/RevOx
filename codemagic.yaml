@@ -1,6 +1,6 @@
 workflows:
   android-build:
-    name: RevOx Android Release Build
+    name: RevOx Android Build
 
     environment:
       java: 21
@@ -21,20 +21,35 @@ workflows:
           cd mobile
           npx cap sync android
 
-      - name: Build APK
+      - name: Build Release APK
         script: |
           cd mobile/android
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Find APK
+      - name: Sign APK
         script: |
-          find mobile/android -name "*.apk"
+          APK=app/build/outputs/apk/release/app-release-unsigned.apk
+
+          if [ ! -f "$APK" ]; then
+            APK=$(find app/build/outputs/apk -name "*.apk" | head -1)
+          fi
+
+          echo "Signing: $APK"
+
+          $CM_BUILD_DIR/signing/sign_apk.sh "$APK"
 
       - name: Rename APK
         script: |
-          APK=$(find mobile/android -name "*.apk" | head -1)
-          cp "$APK" mobile/android/app/build/outputs/apk/release/RevOx.apk
+          APK=$(find mobile/android/app/build/outputs/apk -name "*.apk" | head -1)
+
+          mkdir -p output
+
+          cp "$APK" output/RevOx.apk
+
+      - name: Verify APK
+        script: |
+          $ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose output/RevOx.apk
 
     artifacts:
-      - mobile/android/app/build/outputs/apk/release/RevOx.apk
+      - output/RevOx.apk
