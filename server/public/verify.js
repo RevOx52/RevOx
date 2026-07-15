@@ -1,130 +1,77 @@
-const inputs = document.querySelectorAll(".code");
+const API = "http://127.0.0.1:8081";
 
 const button = document.getElementById("verify");
 const status = document.getElementById("status");
 
-const email = localStorage.getItem("email");
+
+button.onclick = async () => {
+
+    const code = document.getElementById("code").value.trim();
+
+    const email = localStorage.getItem("email");
 
 
-inputs.forEach((input,index)=>{
+    if (!code || code.length !== 6) {
 
-    input.addEventListener("input",()=>{
-
-        if(input.value && index < inputs.length-1){
-
-            inputs[index+1].focus();
-
-        }
-
-    });
-
-
-    input.addEventListener("keydown",(e)=>{
-
-        if(e.key === "Backspace" && !input.value && index > 0){
-
-            inputs[index-1].focus();
-
-        }
-
-    });
-
-
-    input.addEventListener("input",()=>{
-
-        input.value =
-        input.value.replace(/[^0-9]/g,"");
-
-    });
-
-});
-
-
-
-button.onclick = async()=>{
-
-
-    let code = "";
-
-    inputs.forEach(input=>{
-
-        code += input.value;
-
-    });
-
-
-
-    if(code.length !== 6){
-
-        status.innerText =
-        "Введите весь код";
+        status.innerText = "Введите 6 цифр";
 
         return;
 
     }
 
 
-
-    status.innerText =
-    "Проверяем...";
+    status.innerText = "Проверяем код...";
 
 
+    try {
 
-    try{
 
+        const response = await fetch(API + "/api/auth/verify-code", {
 
-        const res =
-        await fetch("/api/auth/verify",
-        {
+            method: "POST",
 
-            method:"POST",
+            headers: {
 
-            headers:{
-
-                "Content-Type":"application/json"
+                "Content-Type": "application/json"
 
             },
 
-            body:JSON.stringify({
+            body: JSON.stringify({
 
-                email,
+                email: email,
 
-                code
+                code: code
 
             })
 
         });
 
 
-
-        const data =
-        await res.json();
+        const data = await response.json();
 
 
-
-        if(data.success){
-
-
-            location.href =
-            "profile.html";
+        if (data.success) {
 
 
-        }else{
+            window.location.href = "home.html";
 
 
-            status.innerText =
-            data.message;
+        } else {
+
+
+            status.innerText = data.message || "Неверный код";
 
 
         }
 
 
 
-    }catch(error){
+    } catch(error) {
 
 
-        status.innerText =
-        "Ошибка сервера";
+        console.log(error);
+
+        status.innerText = "Сервер недоступен";
 
 
     }

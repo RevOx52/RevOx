@@ -1,155 +1,54 @@
-console.log("INDEX JS LOADED");
-
+const API = "http://127.0.0.1:8081";
 
 const button = document.getElementById("continue");
 const status = document.getElementById("status");
 
+button.onclick = async () => {
 
-button.onclick = async()=>{
+    const email = document.getElementById("email").value.trim();
 
-
-    const email =
-    document.getElementById("email").value.trim();
-
-
-
-    if(!email){
-
-        status.innerText =
-        "Введите email";
-
+    if (!email) {
+        status.innerText = "Введите email";
         return;
     }
 
+    status.innerText = "Отправляем код...";
 
+    try {
 
-    if(!email.includes("@")){
-
-        status.innerText =
-        "Неверный email";
-
-        return;
-    }
-
-
-
-    status.innerText =
-    "Проверяем email...";
-
-
-
-    try{
-
-
-        // Проверяем существует ли пользователь
-
-        const check =
-        await fetch("/api/auth/check",
-        {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"application/json"
+        const response = await fetch(API + "/api/auth/send-code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-
-            body:JSON.stringify({
-                email
+            body: JSON.stringify({
+                email: email
             })
-
         });
 
 
-
-        const data =
-        await check.json();
+        const data = await response.json();
 
 
+        if (data.success) {
 
-        localStorage.setItem(
-            "email",
-            email
-        );
+            localStorage.setItem("email", email);
 
+            window.location.href = "verify.html";
 
+        } else {
 
-        if(data.exists){
-
-
-            // пользователь есть
-
-            location.href =
-            "login.html";
-
-
-        }else{
-
-
-            // новый пользователь
-            // отправляем код
-
-
-            status.innerText =
-            "Отправляем код...";
-
-
-
-            const send =
-            await fetch("/api/auth/register",
-            {
-
-                method:"POST",
-
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-                body:JSON.stringify({
-                    email
-                })
-
-            });
-
-
-
-            const sendData =
-            await send.json();
-
-
-
-            if(sendData.success){
-
-
-                location.href =
-                "verify.html";
-
-
-            }else{
-
-
-                status.innerText =
-                sendData.message ||
-                "Ошибка отправки";
-
-
-            }
-
+            status.innerText = data.message || "Ошибка отправки";
 
         }
 
 
-
-    }catch(error){
-
+    } catch (error) {
 
         console.log(error);
 
-
-        status.innerText =
-        "Ошибка сервера";
-
+        status.innerText = "Сервер недоступен";
 
     }
-
 
 };

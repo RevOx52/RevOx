@@ -1,79 +1,53 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>RevOx Verify</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RevOx</title>
 <link rel="stylesheet" href="style.css">
-
 </head>
 
-
 <body>
-
 
 <div class="screen">
 
 <div class="card">
-
 
 <div class="logo">
 RevOx
 </div>
 
 
-<h1>
-Подтверждение
-</h1>
-
+<h1>Введите код</h1>
 
 <p class="hint">
-Введите код из письма
+Код отправлен на ваш email
 </p>
 
 
+<div class="input-box">
 
-<div class="code-box">
-
-
-<input maxlength="1" class="code">
-<input maxlength="1" class="code">
-<input maxlength="1" class="code">
-<input maxlength="1" class="code">
-<input maxlength="1" class="code">
-<input maxlength="1" class="code">
-
+<input 
+id="code"
+maxlength="6"
+inputmode="numeric"
+placeholder="000000">
 
 </div>
 
 
-
 <button id="verify">
-
 Продолжить
-
 </button>
 
-
-
-<p id="timer"></p>
 
 <p id="status"></p>
 
 
-
 </div>
-
 </div>
-
 
 
 <script src="verify.js"></script>
 
-
 </body>
-
 </html>
