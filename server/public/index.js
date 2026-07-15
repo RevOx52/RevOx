@@ -1,53 +1,73 @@
-const API = "http://127.0.0.1:8081";
+const API = "http://127.0.0.1:8080";
 
 const button = document.getElementById("continue");
 const status = document.getElementById("status");
 
+
 button.onclick = async () => {
 
-    const email = document.getElementById("email").value.trim();
+    const email = document
+        .getElementById("email")
+        .value
+        .trim();
 
-    if (!email) {
+
+    if(!email){
+
         status.innerText = "Введите email";
+
         return;
+
     }
+
 
     status.innerText = "Отправляем код...";
 
+
     try {
 
-        const response = await fetch(API + "/api/auth/send-code", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email
-            })
-        });
+        const response = await fetch(
+            API + "/api/auth/register",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    email:email
+                })
+            }
+        );
 
 
         const data = await response.json();
 
 
-        if (data.success) {
+        if(data.success){
 
-            localStorage.setItem("email", email);
+            localStorage.setItem(
+                "email",
+                email
+            );
 
-            window.location.href = "verify.html";
+
+            location.href="verify.html";
+
 
         } else {
 
-            status.innerText = data.message || "Ошибка отправки";
+            status.innerText =
+            data.message || "Ошибка";
 
         }
 
 
-    } catch (error) {
+    } catch(error){
 
         console.log(error);
 
-        status.innerText = "Сервер недоступен";
+        status.innerText =
+        "Сервер недоступен";
 
     }
 

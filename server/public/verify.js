@@ -1,80 +1,89 @@
-const API = "http://127.0.0.1:8081";
-
-const button = document.getElementById("verify");
-const status = document.getElementById("status");
+const API = "http://127.0.0.1:8080";
 
 
-button.onclick = async () => {
-
-    const code = document.getElementById("code").value.trim();
-
-    const email = localStorage.getItem("email");
+document.getElementById("verify").onclick = async()=>{
 
 
-    if (!code || code.length !== 6) {
-
-        status.innerText = "Введите 6 цифр";
-
-        return;
-
-    }
+const code =
+document.getElementById("code").value.trim();
 
 
-    status.innerText = "Проверяем код...";
+const email =
+localStorage.getItem("email");
 
 
-    try {
+const status =
+document.getElementById("status");
 
 
-        const response = await fetch(API + "/api/auth/verify-code", {
+if(code.length !== 6){
 
-            method: "POST",
+    status.innerText =
+    "Введите 6 цифр";
 
-            headers: {
+    return;
 
-                "Content-Type": "application/json"
-
-            },
-
-            body: JSON.stringify({
-
-                email: email,
-
-                code: code
-
-            })
-
-        });
+}
 
 
-        const data = await response.json();
+try{
 
 
-        if (data.success) {
+const response =
+await fetch(
+API + "/api/auth/verify",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:email,
+
+code:code
+
+})
+
+});
 
 
-            window.location.href = "home.html";
-
-
-        } else {
-
-
-            status.innerText = data.message || "Неверный код";
-
-
-        }
+const data =
+await response.json();
 
 
 
-    } catch(error) {
+if(data.success){
 
 
-        console.log(error);
-
-        status.innerText = "Сервер недоступен";
+location.href="home.html";
 
 
-    }
+}else{
+
+
+status.innerText =
+data.message || "Неверный код";
+
+
+}
+
+
+
+}catch(error){
+
+
+console.log(error);
+
+status.innerText =
+"Сервер недоступен";
+
+
+}
+
 
 
 };
