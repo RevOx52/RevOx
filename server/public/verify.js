@@ -1,19 +1,27 @@
-const API = "http://127.0.0.1:8080";
+const API = "http://10.146.27.204:8080";
 
 
-document.getElementById("verify").onclick = async()=>{
+const button =
+document.getElementById("verify");
+
+
+const status =
+document.getElementById("status");
+
+
+
+button.onclick = async () => {
 
 
 const code =
-document.getElementById("code").value.trim();
+document.getElementById("code")
+.value
+.trim();
 
 
 const email =
 localStorage.getItem("email");
 
-
-const status =
-document.getElementById("status");
 
 
 if(code.length !== 6){
@@ -24,6 +32,12 @@ if(code.length !== 6){
     return;
 
 }
+
+
+
+status.innerText =
+"Проверяем...";
+
 
 
 try{
@@ -37,7 +51,10 @@ API + "/api/auth/verify",
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+
+"Content-Type":
+"application/json"
+
 },
 
 body:JSON.stringify({
@@ -51,6 +68,7 @@ code:code
 });
 
 
+
 const data =
 await response.json();
 
@@ -59,14 +77,16 @@ await response.json();
 if(data.success){
 
 
-location.href="home.html";
+window.location.href =
+"home.html";
 
 
 }else{
 
 
 status.innerText =
-data.message || "Неверный код";
+data.message ||
+"Неверный код";
 
 
 }
@@ -78,8 +98,9 @@ data.message || "Неверный код";
 
 console.log(error);
 
+
 status.innerText =
-"Сервер недоступен";
+"Ошибка сервера";
 
 
 }

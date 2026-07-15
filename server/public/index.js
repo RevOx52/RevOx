@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:8080";
+const API = "http://10.146.27.204:8080";
 
 const button = document.getElementById("continue");
 const status = document.getElementById("status");
@@ -12,7 +12,7 @@ button.onclick = async () => {
         .trim();
 
 
-    if(!email){
+    if (!email) {
 
         status.innerText = "Введите email";
 
@@ -29,12 +29,14 @@ button.onclick = async () => {
         const response = await fetch(
             API + "/api/auth/register",
             {
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                body:JSON.stringify({
-                    email:email
+
+                body: JSON.stringify({
+                    email: email
                 })
             }
         );
@@ -43,7 +45,7 @@ button.onclick = async () => {
         const data = await response.json();
 
 
-        if(data.success){
+        if (data.success) {
 
             localStorage.setItem(
                 "email",
@@ -51,23 +53,29 @@ button.onclick = async () => {
             );
 
 
-            location.href="verify.html";
+            window.location.href =
+                "verify.html";
 
 
         } else {
 
+
             status.innerText =
-            data.message || "Ошибка";
+                data.message || "Ошибка";
+
 
         }
 
 
-    } catch(error){
+    } catch(error) {
+
 
         console.log(error);
 
+
         status.innerText =
-        "Сервер недоступен";
+            "Ошибка сервера";
+
 
     }
 
