@@ -3,7 +3,6 @@ const API = "http://192.168.8.38:8080";
 const button = document.getElementById("continue");
 const status = document.getElementById("status");
 
-
 button.onclick = async () => {
 
     const email = document
@@ -11,18 +10,12 @@ button.onclick = async () => {
         .value
         .trim();
 
-
     if (!email) {
-
         status.innerText = "Введите email";
-
         return;
-
     }
 
-
     status.innerText = "Отправляем код...";
-
 
     try {
 
@@ -30,20 +23,18 @@ button.onclick = async () => {
             API + "/api/auth/register",
             {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json"
                 },
-
                 body: JSON.stringify({
                     email: email
                 })
             }
         );
 
-
         const data = await response.json();
 
+        console.log("SERVER:", data);
 
         if (data.success) {
 
@@ -52,30 +43,22 @@ button.onclick = async () => {
                 email
             );
 
-
-            window.location.href =
-                "verify.html";
-
+            window.location.href = "verify.html";
 
         } else {
-
 
             status.innerText =
                 data.message || "Ошибка";
 
-
         }
 
 
-    } catch(error) {
+    } catch (error) {
 
-
-        console.log(error);
-
+        console.log("FETCH ERROR:", error);
 
         status.innerText =
-            "Ошибка сервера";
-
+            "Ошибка: " + error.message;
 
     }
 
