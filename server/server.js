@@ -9,6 +9,7 @@ const userRoute = require("./routes/user");
 const chatsRoute = require("./routes/chats");
 const messagesRoute = require("./routes/messages");
 
+
 const {
     initSocket
 } = require("./socket/socket");
@@ -19,65 +20,80 @@ const app = express();
 
 
 
-app.use(cors());
+app.use(cors({
+    origin: "*",
+    methods: [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS"
+    ],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization"
+    ]
+}));
+
 
 app.use(express.json());
 
 
+// Лог всех запросов
+app.use((req,res,next)=>{
+
+    console.log(
+        "REQUEST:",
+        req.method,
+        req.url
+    );
+
+    next();
+
+});
+
+
 
 // HTTP сервер
-
-const server =
-    http.createServer(app);
-
+const server = http.createServer(app);
 
 
 // Socket.io
-
-const io =
-    initSocket(server);
+const io = initSocket(server);
 
 
 
-// передаём socket в API
+// передача socket в API
+app.use((req,res,next)=>{
 
-app.use(
-    (req,res,next)=>{
+    req.io = io;
 
-        req.io = io;
+    next();
 
-        next();
-
-    }
-);
+});
 
 
 
-// проверка
+// Проверка сервера
+app.get("/", (req,res)=>{
 
-app.get(
-    "/",
-    (req,res)=>{
+    res.json({
 
+        app:"RevOx",
 
-        res.json({
+        status:"online",
 
-            app:"RevOx",
+        socket:true,
 
-            status:"online",
+        time:new Date().toISOString()
 
-            socket:true
+    });
 
-        });
-
-
-    }
-);
+});
 
 
 
 // API
-
 app.use(
     "/api/auth",
     authRoute
@@ -103,11 +119,26 @@ app.use(
 
 
 
+// Ошибки
+app.use((err,req,res,next)=>{
 
-// запуск
+    console.log("ERROR:",err);
 
+    res.status(500).json({
+
+        success:false,
+
+        message:"Server error"
+
+    });
+
+});
+
+
+
+// Запуск
 const PORT =
-    process.env.PORT || 8080;
+process.env.PORT || 8080;
 
 
 
@@ -116,11 +147,9 @@ server.listen(
     "0.0.0.0",
     ()=>{
 
-
         console.log(
             `RevOx server running on ${PORT}`
         );
-
 
     }
 );
