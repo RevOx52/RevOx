@@ -1,110 +1,64 @@
-const API = "http://192.168.8.38:8080";
+const API = "https://revox-yuyn.onrender.com";
 
 
-const button =
-document.getElementById("verify");
-
-
-const status =
-document.getElementById("status");
-
+const button = document.getElementById("verify");
+const status = document.getElementById("status");
 
 
 button.onclick = async () => {
 
-
-const code =
-document.getElementById("code")
-.value
-.trim();
+    const code = document.getElementById("code").value.trim();
+    const email = localStorage.getItem("email");
 
 
-const email =
-localStorage.getItem("email");
+    if (code.length !== 6) {
+
+        status.innerText = "Введите 6 цифр";
+        return;
+
+    }
 
 
-
-if(code.length !== 6){
-
-    status.innerText =
-    "Введите 6 цифр";
-
-    return;
-
-}
+    status.innerText = "Проверяем...";
 
 
+    try {
 
-status.innerText =
-"Проверяем...";
-
-
-
-try{
-
-
-const response =
-await fetch(
-API + "/api/auth/verify",
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":
-"application/json"
-
-},
-
-body:JSON.stringify({
-
-email:email,
-
-code:code
-
-})
-
-});
+        const response = await fetch(
+            API + "/api/auth/verify",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    email: email,
+                    code: code
+                })
+            }
+        );
 
 
-
-const data =
-await response.json();
+        const data = await response.json();
 
 
+        if(data.success){
 
-if(data.success){
+            window.location.href="home.html";
 
+        } else {
 
-window.location.href =
-"home.html";
+            status.innerText =
+            data.message || "Неверный код";
 
-
-}else{
-
-
-status.innerText =
-data.message ||
-"Неверный код";
+        }
 
 
-}
+    } catch(error){
 
+        console.log(error);
+        status.innerText="Ошибка сервера";
 
-
-}catch(error){
-
-
-console.log(error);
-
-
-status.innerText =
-"Ошибка сервера";
-
-
-}
-
-
+    }
 
 };
