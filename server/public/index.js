@@ -1,4 +1,4 @@
-const API = "http://10.146.27.204:8080";
+const API = "http://192.168.8.38:8080";
 
 const button = document.getElementById("continue");
 const status = document.getElementById("status");
