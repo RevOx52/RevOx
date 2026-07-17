@@ -31,7 +31,7 @@ workflows:
 
 
 
-      - name: Generate RevOx icon
+      - name: Generate app icon
 
         script: |
 
@@ -47,59 +47,45 @@ workflows:
 
           cd mobile/android
 
-
           python3 <<'PY'
 
           import re
           import os
 
 
-          path = "app/build.gradle"
+          file = "app/build.gradle"
 
 
-          with open(path, "r") as f:
+          with open(file, "r") as f:
               data = f.read()
 
 
-          build_number = os.environ.get(
+          build = os.environ.get(
               "BUILD_NUMBER",
               "1"
           )
 
 
-          version_code = build_number
-
-          version_name = "1." + build_number
-
-
           data = re.sub(
               r'versionCode\s+\d+',
-              f'versionCode {version_code}',
+              f'versionCode {build}',
               data
           )
 
 
           data = re.sub(
               r'versionName\s+"[^"]+"',
-              f'versionName "{version_name}"',
+              f'versionName "1.{build}"',
               data
           )
 
 
-          with open(path, "w") as f:
+          with open(file, "w") as f:
               f.write(data)
 
 
-          print(
-              "RevOx version:",
-              version_name
-          )
-
-          print(
-              "Version code:",
-              version_code
-          )
-
+          print("Version:", "1."+build)
+          print("Code:", build)
 
           PY
 
@@ -127,16 +113,6 @@ workflows:
 
 
 
-      - name: Find APK
-
-        script: |
-
-          echo "Searching APK..."
-
-          find mobile/android -name "*.apk"
-
-
-
       - name: Sign APK
 
         script: |
@@ -150,11 +126,14 @@ workflows:
 
           $ANDROID_HOME/build-tools/36.0.0/apksigner sign \
           --ks $CM_KEYSTORE_PATH \
-          --ks-alias $CM_KEY_ALIAS \
+          --ks-key-alias $CM_KEY_ALIAS \
           --ks-pass pass:$CM_KEYSTORE_PASSWORD \
           --key-pass pass:$CM_KEY_PASSWORD \
           "$APK"
 
+
+
+          echo "Verify signature"
 
 
           $ANDROID_HOME/build-tools/36.0.0/apksigner verify \
