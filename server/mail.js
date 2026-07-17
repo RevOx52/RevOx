@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport({
 
     host: process.env.SMTP_HOST,
 
-    port: 587,
+    port: Number(process.env.SMTP_PORT),
 
     secure: false,
 
@@ -16,10 +16,6 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
-    },
-
-    tls: {
-        rejectUnauthorized: false
     }
 
 });
@@ -27,10 +23,12 @@ const transporter = nodemailer.createTransport({
 
 module.exports = async function sendCode(email, code){
 
+    console.log("Sending code to:", email);
+
 
     await transporter.sendMail({
 
-        from: `"RevOx" <${process.env.SMTP_USER}>`,
+        from: process.env.SMTP_USER,
 
         to: email,
 
@@ -41,5 +39,7 @@ module.exports = async function sendCode(email, code){
 
     });
 
+
+    console.log("Code sent!");
 
 };
