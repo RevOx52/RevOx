@@ -4,6 +4,9 @@ const http = require("http");
 require("dotenv").config();
 
 
+const database = require("./database");
+
+
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const chatsRoute = require("./routes/chats");
@@ -21,7 +24,9 @@ const app = express();
 
 
 app.use(cors({
+
     origin: "*",
+
     methods: [
         "GET",
         "POST",
@@ -29,17 +34,22 @@ app.use(cors({
         "DELETE",
         "OPTIONS"
     ],
+
     allowedHeaders: [
         "Content-Type",
         "Authorization"
     ]
+
 }));
+
 
 
 app.use(express.json());
 
 
+
 // Лог всех запросов
+
 app.use((req,res,next)=>{
 
     console.log(
@@ -54,16 +64,21 @@ app.use((req,res,next)=>{
 
 
 
+
 // HTTP сервер
+
 const server = http.createServer(app);
 
 
+
 // Socket.io
+
 const io = initSocket(server);
 
 
 
-// передача socket в API
+// Передача socket в API
+
 app.use((req,res,next)=>{
 
     req.io = io;
@@ -74,7 +89,9 @@ app.use((req,res,next)=>{
 
 
 
+
 // Проверка сервера
+
 app.get("/", (req,res)=>{
 
     res.json({
@@ -93,7 +110,9 @@ app.get("/", (req,res)=>{
 
 
 
+
 // API
+
 app.use(
     "/api/auth",
     authRoute
@@ -119,10 +138,16 @@ app.use(
 
 
 
+
 // Ошибки
+
 app.use((err,req,res,next)=>{
 
-    console.log("ERROR:",err);
+    console.log(
+        "ERROR:",
+        err
+    );
+
 
     res.status(500).json({
 
@@ -136,20 +161,59 @@ app.use((err,req,res,next)=>{
 
 
 
+
+
 // Запуск
+
 const PORT =
 process.env.PORT || 8080;
 
 
 
-server.listen(
-    PORT,
-    "0.0.0.0",
-    ()=>{
+async function start(){
 
-        console.log(
-            `RevOx server running on ${PORT}`
+    try{
+
+
+        await database.init();
+
+
+
+        server.listen(
+
+            PORT,
+
+            "0.0.0.0",
+
+            ()=>{
+
+                console.log(
+                    `RevOx server running on ${PORT}`
+                );
+
+            }
+
         );
 
+
+    }catch(error){
+
+
+        console.log(
+            "DATABASE START ERROR:"
+        );
+
+
+        console.log(error);
+
+
+        process.exit(1);
+
+
     }
-);
+
+}
+
+
+
+start();
