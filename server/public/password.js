@@ -76,19 +76,14 @@ status.innerText =
 try{
 
 
-const res =
-await fetch(
-
+const res = await fetch(
 API + "/api/auth/set-password",
-
 {
 
 method:"POST",
 
 headers:{
-
 "Content-Type":"application/json"
-
 },
 
 body:JSON.stringify({
@@ -103,9 +98,7 @@ lastName
 
 })
 
-}
-
-);
+});
 
 
 
@@ -115,6 +108,13 @@ await res.json();
 
 
 if(data.success){
+
+
+localStorage.setItem(
+"token",
+data.token
+);
+
 
 
 status.innerText =
