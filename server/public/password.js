@@ -1,3 +1,6 @@
+const API = "https://revox-yuyn.onrender.com";
+
+
 const button =
 document.getElementById("create");
 
@@ -66,7 +69,7 @@ return;
 
 
 status.innerText =
-"Сохраняем...";
+"Создаём аккаунт...";
 
 
 
@@ -74,7 +77,10 @@ try{
 
 
 const res =
-await fetch("/api/auth/set-password",
+await fetch(
+
+API + "/api/auth/set-password",
+
 {
 
 method:"POST",
@@ -97,7 +103,9 @@ lastName
 
 })
 
-});
+}
+
+);
 
 
 
@@ -109,7 +117,11 @@ await res.json();
 if(data.success){
 
 
-location.href =
+status.innerText =
+"Аккаунт создан";
+
+
+window.location.href =
 "home.html";
 
 
@@ -117,7 +129,8 @@ location.href =
 
 
 status.innerText =
-data.message;
+data.message ||
+"Ошибка";
 
 
 }
@@ -126,6 +139,8 @@ data.message;
 
 }catch(e){
 
+
+console.log(e);
 
 status.innerText =
 "Ошибка сервера";

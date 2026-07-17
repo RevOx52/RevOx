@@ -27,13 +27,13 @@ button.onclick = async () => {
         const response = await fetch(
             API + "/api/auth/verify",
             {
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                body:JSON.stringify({
-                    email: email,
-                    code: code
+                body: JSON.stringify({
+                    email,
+                    code
                 })
             }
         );
@@ -42,9 +42,15 @@ button.onclick = async () => {
         const data = await response.json();
 
 
-        if(data.success){
+        if (data.success) {
 
-            window.location.href="home.html";
+            localStorage.setItem(
+                "verified",
+                "true"
+            );
+
+            window.location.href = "profile.html";
+
 
         } else {
 
@@ -54,10 +60,12 @@ button.onclick = async () => {
         }
 
 
-    } catch(error){
+    } catch(error) {
 
         console.log(error);
-        status.innerText="Ошибка сервера";
+
+        status.innerText =
+        "Ошибка сервера";
 
     }
 
