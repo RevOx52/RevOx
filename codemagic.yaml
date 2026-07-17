@@ -9,9 +9,7 @@ workflows:
 
       java: 21
 
-
       android_signing:
-
         - revox
 
 
@@ -33,13 +31,38 @@ workflows:
 
 
 
-      - name: Generate RevOx app icons
+      - name: Generate app icon
 
         script: |
 
           cd mobile
 
           npx capacitor-assets generate
+
+
+
+      - name: Auto update version
+
+        script: |
+
+          cd mobile/android
+
+
+          VERSION_CODE=$BUILD_NUMBER
+
+          VERSION_NAME="1.$BUILD_NUMBER"
+
+
+          echo "Building RevOx version:"
+          echo "$VERSION_NAME"
+          echo "Code:"
+          echo "$VERSION_CODE"
+
+
+          sed -i "s/versionCode [0-9]*/versionCode $VERSION_CODE/" app/build.gradle
+
+
+          sed -i "s/versionName \"[^\"]*\"/versionName \"$VERSION_NAME\"/" app/build.gradle
 
 
 
@@ -69,7 +92,7 @@ workflows:
 
         script: |
 
-          echo "Searching APK files..."
+          echo "Searching APK..."
 
           find mobile/android -name "*.apk"
 
@@ -83,26 +106,17 @@ workflows:
 
 
           echo "Signing:"
-
           echo "$APK"
 
 
-
           $ANDROID_HOME/build-tools/36.0.0/apksigner sign \
-
           --ks $CM_KEYSTORE_PATH \
-
           --ks-key-alias $CM_KEY_ALIAS \
-
           --ks-pass pass:$CM_KEYSTORE_PASSWORD \
-
           --key-pass pass:$CM_KEY_PASSWORD \
-
           "$APK"
 
 
-
-          echo "Checking signature..."
 
           $ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose "$APK"
 
