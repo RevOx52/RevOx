@@ -1,0 +1,50 @@
+.verify-title{
+
+    font-size:30px;
+
+    margin-bottom:15px;
+
+}
+
+
+.verify-description{
+
+    color:#aaa;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.code-input{
+
+    text-align:center;
+
+    letter-spacing:12px;
+
+    font-size:28px;
+
+    font-weight:700;
+
+}
+
+
+
+.verify-button{
+
+    margin-top:25px;
+
+}
+
+
+
+.timer{
+
+    margin-top:20px;
+
+    text-align:center;
+
+    color:#888;
+
+}

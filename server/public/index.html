@@ -1,55 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>RevOx</title>
-<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/index.css">
+
 </head>
+
 
 <body>
 
-<div class="screen">
 
-<div class="card">
+<div class="auth-container">
+
 
 <div class="logo">
-RevOx
+    RevOx
 </div>
 
-<h1>Вход в RevOx</h1>
 
-<p class="hint">
-Введите email для входа или регистрации
+<h1 class="auth-title">
+    Создать аккаунт
+</h1>
+
+
+<p class="auth-description">
+    Введите email для регистрации
 </p>
 
 
-<div class="input-box">
-
-<span class="mail-icon">✉</span>
-
-<input 
+<input
 id="email"
 type="email"
 placeholder="Email"
-autocomplete="email">
-
-</div>
+autocomplete="email"
+>
 
 
 <button id="continue">
-Продолжить
+    Продолжить
 </button>
 
 
-<p id="status"></p>
+<div id="status"></div>
 
-
-</div>
 
 </div>
 
 
 <script src="index.js"></script>
 
+
 </body>
+
 </html>
