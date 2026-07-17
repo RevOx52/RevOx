@@ -9,8 +9,11 @@
 
 <title>RevOx</title>
 
+
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/index.css">
+
+<link rel="stylesheet" href="auth.css">
+
 
 </head>
 
@@ -18,46 +21,124 @@
 <body>
 
 
-<div class="auth-container">
+<div class="auth">
+
+
+<div class="auth-card">
+
 
 
 <div class="logo">
-    RevOx
+
+<svg viewBox="0 0 64 64">
+
+<path d="M20 35c0-10 7-18 17-18 8 0 14 5 15 12l7 3-7 6c-2 9-11 14-21 14-7 0-11-5-11-17z"/>
+
+</svg>
+
 </div>
 
 
-<h1 class="auth-title">
-    Создать аккаунт
+
+
+<h1>
+Создать аккаунт
 </h1>
 
 
-<p class="auth-description">
-    Введите email для регистрации
+
+<p class="subtitle">
+Введите email для регистрации
 </p>
 
 
+
+
+
+
 <input
+
 id="email"
+
 type="email"
+
 placeholder="Email"
+
 autocomplete="email"
+
 >
 
 
-<button id="continue">
-    Продолжить
+
+
+
+
+
+<button id="continue" class="main-btn">
+
+Продолжить
+
 </button>
 
 
-<div id="status"></div>
+
+
+
+
+<p id="status" class="status"></p>
+
+
+
+
+
+
+
+<div class="legal">
+
+
+Продолжая, вы соглашаетесь с:
+
+
+<br>
+
+
+<a href="privacy.html">
+
+Политикой конфиденциальности
+
+</a>
+
+
+<br>
+
+
+<a href="terms.html">
+
+Условиями использования
+
+</a>
+
 
 
 </div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
 
 
 <script src="index.js"></script>
 
 
 </body>
+
 
 </html>

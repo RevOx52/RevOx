@@ -1,32 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>RevOx</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="home.css">
 
 </head>
 
+
 <body>
+
 
 <div class="app">
 
 
 <header class="top">
 
+
 <div class="brand">
-🦆 RevOx
+
+<div class="duck-logo">
+<svg viewBox="0 0 64 64">
+<circle cx="32" cy="32" r="30"/>
+<path d="M20 35c0-10 7-18 17-18 8 0 14 5 15 12l7 3-7 6c-2 9-11 14-21 14-7 0-11-5-11-17z"/>
+</svg>
 </div>
+
+<span>
+RevOx
+</span>
+
+</div>
+
+
 
 <div class="actions">
-<button>🔍</button>
-<button>⚙</button>
+
+
+<button id="searchBtn">
+
+<svg viewBox="0 0 24 24">
+<circle cx="10" cy="10" r="6"/>
+<line x1="15" y1="15" x2="21" y2="21"/>
+</svg>
+
+</button>
+
+
+
+<button id="settingsBtn">
+
+<svg viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="3"/>
+<path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.9a7 7 0 0 0-1.7 1L5 6 3 9.5 5 11a7 7 0 0 0 0 2l-2 1.5L5 18l2.4-.9a7 7 0 0 0 1.7 1l.4 2.9h5l.4-2.9a7 7 0 0 0 1.7-1l2.3.9 2-3.5-2-1.5c.1-.3.1-.7.1-1z"/>
+</svg>
+
+</button>
+
+
 </div>
 
+
 </header>
+
+
 
 
 
@@ -35,9 +78,15 @@
 
 <div class="empty">
 
-<div class="duck">
-🦆
+
+<div class="duck-big">
+
+<svg viewBox="0 0 64 64">
+<path d="M20 35c0-10 7-18 17-18 8 0 14 5 15 12l7 3-7 6c-2 9-11 14-21 14-7 0-11-5-11-17z"/>
+</svg>
+
 </div>
+
 
 
 <h2>
@@ -50,6 +99,7 @@
 </p>
 
 
+
 </div>
 
 
@@ -57,44 +107,116 @@
 
 
 
-<button class="add">
 
-+
+
+<button class="add" id="addChat">
+
+
+<svg viewBox="0 0 24 24">
+<line x1="12" y1="5" x2="12" y2="19"/>
+<line x1="5" y1="12" x2="19" y2="12"/>
+</svg>
+
 
 </button>
+
+
+
 
 
 
 <nav class="nav">
 
-<button>
-💬
-<span>Чаты</span>
+
+
+<button data-page="chats">
+
+
+<svg viewBox="0 0 24 24">
+<path d="M4 5h16v11H7l-3 3z"/>
+</svg>
+
+
+<span>
+Чаты
+</span>
+
 </button>
 
-<button>
-👥
-<span>Контакты</span>
+
+
+
+
+<button data-page="contacts">
+
+
+<svg viewBox="0 0 24 24">
+<circle cx="9" cy="8" r="4"/>
+<path d="M2 21c0-4 3-7 7-7"/>
+<path d="M17 11a4 4 0 1 0 0-8"/>
+</svg>
+
+
+<span>
+Контакты
+</span>
+
 </button>
 
-<button>
-📰
-<span>Новости</span>
+
+
+
+
+
+<button data-page="news">
+
+
+<svg viewBox="0 0 24 24">
+<path d="M4 4h16v16H4z"/>
+<line x1="7" y1="8" x2="17" y2="8"/>
+<line x1="7" y1="12" x2="17" y2="12"/>
+</svg>
+
+
+<span>
+Новости
+</span>
+
 </button>
 
-<button>
-👤
-<span>Профиль</span>
+
+
+
+
+
+<button data-page="profile">
+
+
+<svg viewBox="0 0 24 24">
+<circle cx="12" cy="8" r="4"/>
+<path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
+</svg>
+
+
+<span>
+Профиль
+</span>
+
 </button>
+
 
 
 </nav>
 
 
+
 </div>
+
 
 
 <script src="home.js"></script>
 
+
 </body>
+
 </html>

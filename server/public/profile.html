@@ -7,13 +7,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>RevOx — Профиль</title>
 
-<title>RevOx - Profile</title>
 
-
-<link rel="stylesheet" href="css/base.css">
-
-<link rel="stylesheet" href="css/profile.css">
+<link rel="stylesheet" href="auth.css">
 
 
 </head>
@@ -22,22 +19,77 @@
 <body>
 
 
-<div class="auth-container">
+<div class="auth">
 
 
-<div class="logo">
-RevOx
+<div class="auth-card">
+
+
+
+<div class="avatar-section">
+
+
+<div class="avatar-wrapper">
+
+
+<img id="avatarPreview">
+
+
+<div id="avatarLetter">
+?
 </div>
 
 
-<h1 class="profile-title">
+</div>
+
+
+
+
+<label for="avatar" class="avatar-button">
+
+Добавить фото
+
+</label>
+
+
+
+<input
+
+id="avatar"
+
+type="file"
+
+accept="image/*"
+
+hidden
+
+>
+
+
+
+</div>
+
+
+
+
+
+
+
+<h1>
 Ваш профиль
 </h1>
 
 
-<p class="profile-description">
-Введите имя и фамилию
+
+
+<p class="subtitle">
+Расскажите о себе
 </p>
+
+
+
+
+
 
 
 
@@ -49,7 +101,12 @@ type="text"
 
 placeholder="Имя"
 
+autocomplete="given-name"
+
 >
+
+
+
 
 
 
@@ -61,27 +118,46 @@ type="text"
 
 placeholder="Фамилия"
 
+autocomplete="family-name"
+
 >
+
+
+
+
 
 
 
 <button
 
+class="main-btn"
+
 id="continue"
 
-class="profile-button"
-
 >
+
 Продолжить
+
 </button>
 
 
 
-<div id="status"></div>
+
+
+
+
+<p id="status" class="status"></p>
+
+
 
 
 
 </div>
+
+
+</div>
+
+
 
 
 
@@ -89,5 +165,6 @@ class="profile-button"
 
 
 </body>
+
 
 </html>
