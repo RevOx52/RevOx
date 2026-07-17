@@ -1,61 +1,128 @@
 workflows:
+
   android-build:
+
     name: RevOx Android Build
 
+
     environment:
+
       java: 21
 
+
       android_signing:
+
         - revox
+
+
 
     scripts:
 
+
       - name: Install dependencies
+
         script: |
+
           cd mobile
+
           npm install
+
           npm install @capacitor/android @capacitor/core @capacitor/cli
 
-      - name: Sync Capacitor
+          npm install @capacitor/assets --save-dev
+
+
+
+      - name: Generate RevOx app icons
+
         script: |
+
           cd mobile
+
+          npx capacitor-assets generate
+
+
+
+      - name: Sync Capacitor
+
+        script: |
+
+          cd mobile
+
           npx cap sync android
 
+
+
       - name: Build APK
+
         script: |
+
           cd mobile/android
+
           chmod +x gradlew
+
           ./gradlew assembleRelease
 
+
+
       - name: Find APK
+
         script: |
+
           echo "Searching APK files..."
+
           find mobile/android -name "*.apk"
 
+
+
       - name: Sign APK
+
         script: |
+
           APK=$(find mobile/android/app/build/outputs/apk -name "*.apk" | head -1)
+
 
           echo "Signing:"
+
           echo "$APK"
 
+
+
           $ANDROID_HOME/build-tools/36.0.0/apksigner sign \
-            --ks $CM_KEYSTORE_PATH \
-            --ks-key-alias $CM_KEY_ALIAS \
-            --ks-pass pass:$CM_KEYSTORE_PASSWORD \
-            --key-pass pass:$CM_KEY_PASSWORD \
-            "$APK"
+
+          --ks $CM_KEYSTORE_PATH \
+
+          --ks-key-alias $CM_KEY_ALIAS \
+
+          --ks-pass pass:$CM_KEYSTORE_PASSWORD \
+
+          --key-pass pass:$CM_KEY_PASSWORD \
+
+          "$APK"
+
+
 
           echo "Checking signature..."
+
           $ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose "$APK"
 
+
+
       - name: Prepare APK
+
         script: |
+
           mkdir -p output
 
+
           APK=$(find mobile/android/app/build/outputs/apk -name "*.apk" | head -1)
+
 
           cp "$APK" output/RevOx.apk
 
+
+
+
     artifacts:
+
       - output/RevOx.apk
