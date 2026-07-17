@@ -1,26 +1,12 @@
 require("dotenv").config();
 
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
 
-const transporter = nodemailer.createTransport({
+const resend = new Resend(
+    process.env.RESEND_API_KEY
+);
 
-    host: "142.250.102.108",
-
-    port: 587,
-
-    secure: false,
-
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    },
-
-    tls: {
-        rejectUnauthorized: false
-    }
-
-});
 
 
 module.exports = async function sendCode(email, code){
@@ -28,19 +14,20 @@ module.exports = async function sendCode(email, code){
     console.log("Sending code to:", email);
 
 
-    await transporter.sendMail({
+    const result = await resend.emails.send({
 
-        from: process.env.SMTP_USER,
+        from: "RevOx <onboarding@resend.dev>",
 
         to: email,
 
         subject: "RevOx verification code",
 
-        text: `Your RevOx code: ${code}`
+        text:
+        `Your RevOx verification code: ${code}`
 
     });
 
 
-    console.log("Code sent!");
+    console.log("Code sent!", result);
 
 };
