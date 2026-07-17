@@ -3,6 +3,60 @@ const { execFile } = require("child_process");
 const db = "users.db";
 
 
+// Создание таблицы при запуске
+
+function init(){
+
+    return new Promise((resolve,reject)=>{
+
+        const sql = `
+        CREATE TABLE IF NOT EXISTS users (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            email TEXT UNIQUE,
+
+            first_name TEXT,
+
+            last_name TEXT,
+
+            password TEXT,
+
+            created_at TEXT
+
+        );
+        `;
+
+
+        execFile(
+            "sqlite3",
+            [
+                db,
+                sql
+            ],
+            (error)=>{
+
+                if(error){
+                    console.log("DATABASE INIT ERROR:");
+                    console.log(error);
+                    reject(error);
+                    return;
+                }
+
+
+                console.log("Database ready");
+
+                resolve(true);
+
+            }
+        );
+
+    });
+
+}
+
+
+
 function query(sql){
 
     return new Promise((resolve,reject)=>{
@@ -21,10 +75,17 @@ function query(sql){
                     return;
                 }
 
-                try {
-                    resolve(JSON.parse(stdout || "[]"));
-                } catch {
+
+                try{
+
+                    resolve(
+                        JSON.parse(stdout || "[]")
+                    );
+
+                }catch{
+
                     resolve([]);
+
                 }
 
             }
@@ -33,6 +94,7 @@ function query(sql){
     });
 
 }
+
 
 
 function run(sql){
@@ -47,10 +109,15 @@ function run(sql){
             ],
             (error)=>{
 
-                if(error)
+                if(error){
+
                     reject(error);
-                else
+
+                }else{
+
                     resolve(true);
+
+                }
 
             }
         );
@@ -60,7 +127,13 @@ function run(sql){
 }
 
 
+
 module.exports = {
+
     query,
-    run
+
+    run,
+
+    init
+
 };
