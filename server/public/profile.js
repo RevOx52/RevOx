@@ -1,54 +1,149 @@
-const button =
-document.getElementById("continue");
+const API =
+"https://revox-yuyn.onrender.com";
 
 
-const status =
-document.getElementById("status");
+const token =
+localStorage.getItem("token");
 
 
-const avatarInput =
+
+if(!token){
+
+location.href="index.html";
+
+}
+
+
+
+
+const avatar =
 document.getElementById("avatar");
-
-
-const avatarPreview =
-document.getElementById("avatarPreview");
 
 
 const avatarLetter =
 document.getElementById("avatarLetter");
 
 
-
-let avatarData = "";
-
-
+const name =
+document.getElementById("name");
 
 
-// Обновление буквы
+const email =
+document.getElementById("email");
 
-function updateLetter(){
 
-
-    const name =
-    document.getElementById("firstName").value.trim();
+const changeAvatar =
+document.getElementById("changeAvatar");
 
 
 
-    if(name){
 
 
-        avatarLetter.innerText =
-        name[0].toUpperCase();
 
 
-    }else{
 
 
-        avatarLetter.innerText =
-        "?";
+async function loadProfile(){
 
 
-    }
+try{
+
+
+const res =
+await fetch(
+
+API+"/api/user/me",
+
+{
+
+headers:{
+
+Authorization:
+
+"Bearer "+token
+
+}
+
+}
+
+);
+
+
+
+const data =
+await res.json();
+
+
+
+if(!data.success)
+return;
+
+
+
+const user =
+data.user;
+
+
+
+name.innerText =
+
+`${user.first_name || ""} ${user.last_name || ""}`;
+
+
+
+email.innerText =
+
+user.email || "";
+
+
+
+
+
+if(user.avatar){
+
+
+avatar.src =
+
+API+user.avatar;
+
+
+avatar.style.display =
+"block";
+
+
+avatarLetter.style.display =
+"none";
+
+
+}else{
+
+
+avatar.style.display =
+"none";
+
+
+avatarLetter.style.display =
+"flex";
+
+
+avatarLetter.innerText =
+
+(user.first_name || "?")[0]
+.toUpperCase();
+
+
+}
+
+
+
+}catch(e){
+
+
+console.log(e);
+
+
+}
+
 
 
 }
@@ -57,11 +152,89 @@ function updateLetter(){
 
 
 
-document
-.getElementById("firstName")
-.addEventListener(
-    "input",
-    updateLetter
+
+
+
+
+
+changeAvatar.addEventListener(
+
+"click",
+
+()=>{
+
+
+
+const input =
+document.createElement("input");
+
+
+input.type =
+"file";
+
+
+input.accept =
+"image/*";
+
+
+
+input.onchange =
+()=>{
+
+
+
+const file =
+input.files[0];
+
+
+
+if(!file)
+return;
+
+
+
+
+
+const reader =
+new FileReader();
+
+
+
+
+
+reader.onload =
+()=>{
+
+
+uploadAvatar(
+
+reader.result
+
+);
+
+
+};
+
+
+
+
+
+reader.readAsDataURL(file);
+
+
+
+};
+
+
+
+
+
+input.click();
+
+
+
+}
+
 );
 
 
@@ -69,150 +242,87 @@ document
 
 
 
-// Выбор фото
 
 
-avatarInput.addEventListener(
-"change",
-()=>{
 
+async function uploadAvatar(image){
 
-    const file =
-    avatarInput.files[0];
 
 
+try{
 
-    if(!file)
-        return;
 
 
+const res =
+await fetch(
 
-    const reader =
-    new FileReader();
+API+"/api/upload/avatar",
 
+{
 
+method:"POST",
 
-    reader.onload = ()=>{
+headers:{
 
+"Content-Type":
 
-        avatarData =
-        reader.result;
+"application/json",
 
 
+Authorization:
 
-        avatarPreview.src =
-        avatarData;
+"Bearer "+token
 
+},
 
 
-        avatarPreview.style.display =
-        "block";
+body:JSON.stringify({
 
+image
 
+})
 
-        avatarLetter.style.display =
-        "none";
 
+}
 
-    };
+);
 
 
 
-    reader.readAsDataURL(file);
 
 
+const data =
+await res.json();
 
-});
 
 
 
 
+if(data.success){
 
 
+loadProfile();
 
-// Сохранение
 
+}
 
-button.onclick = ()=>{
 
 
-    const firstName =
-    document
-    .getElementById("firstName")
-    .value
-    .trim();
+}catch(e){
 
 
+console.log(e);
 
-    const lastName =
-    document
-    .getElementById("lastName")
-    .value
-    .trim();
 
+}
 
 
 
+}
 
-    if(!firstName || !lastName){
 
 
-        status.innerText =
-        "Заполните все поля";
 
 
-        return;
 
-
-    }
-
-
-
-
-
-
-    localStorage.setItem(
-        "firstName",
-        firstName
-    );
-
-
-
-    localStorage.setItem(
-        "lastName",
-        lastName
-    );
-
-
-
-
-
-    if(avatarData){
-
-
-        localStorage.setItem(
-            "avatar",
-            avatarData
-        );
-
-
-    }else{
-
-
-        localStorage.removeItem(
-            "avatar"
-        );
-
-
-    }
-
-
-
-
-
-    location.href =
-    "password.html";
-
-
-
-};
+loadProfile();

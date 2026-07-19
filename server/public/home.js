@@ -1,81 +1,164 @@
-const token = localStorage.getItem("token");
-const email = localStorage.getItem("email");
+const API =
+"https://revox-yuyn.onrender.com";
 
 
-// Проверка авторизации
+const token =
+localStorage.getItem("token");
 
-if (!token) {
 
-    window.location.href = "index.html";
+
+if(!token){
+
+location.href="index.html";
 
 }
 
 
 
-// Навигация
-
-const navButtons =
-document.querySelectorAll(".nav button");
 
 
-
-navButtons.forEach(button => {
-
-
-    button.addEventListener("click", ()=>{
-
-
-        const page =
-        button.dataset.page;
+const chatList =
+document.getElementById("chatList");
 
 
 
-        switch(page){
 
 
-            case "chats":
-
-                showMessage(
-                    "Чаты"
-                );
-
-                break;
+async function loadChats(){
 
 
-
-            case "contacts":
-
-                showMessage(
-                    "Контакты"
-                );
-
-                break;
+try{
 
 
+const res =
+await fetch(
 
-            case "news":
+API+
+"/api/chats",
 
-                showMessage(
-                    "Новости RevOx"
-                );
+{
 
-                break;
+headers:{
+
+Authorization:
+
+"Bearer "+token
+
+}
+
+}
+
+);
 
 
 
-            case "profile":
-
-                showMessage(
-                    email || "Профиль"
-                );
-
-                break;
+const data =
+await res.json();
 
 
-        }
+
+if(!data.success)
+return;
 
 
-    });
+
+
+chatList.innerHTML="";
+
+
+
+
+
+data.chats.forEach(chat=>{
+
+
+const div =
+document.createElement("div");
+
+
+
+div.className =
+"chat";
+
+
+
+
+
+div.innerHTML = `
+
+
+<div class="avatar">
+
+
+${
+chat.avatar
+?
+`<img src="${chat.avatar}">`
+:
+(chat.first_name || "?")[0].toUpperCase()
+
+}
+
+
+</div>
+
+
+
+
+<div class="chat-info">
+
+
+<h3>
+
+${chat.first_name || ""}
+${chat.last_name || ""}
+
+</h3>
+
+
+
+<p>
+
+${chat.last_message || "Нет сообщений"}
+
+</p>
+
+
+
+</div>
+
+
+
+<div class="unread"
+
+id="unread-${chat.id}">
+
+</div>
+
+
+`;
+
+
+
+
+
+
+div.onclick = ()=>{
+
+
+location.href=
+
+"chat.html?id="+chat.id;
+
+
+};
+
+
+
+
+
+chatList.appendChild(div);
+
 
 
 });
@@ -84,32 +167,17 @@ navButtons.forEach(button => {
 
 
 
-function showMessage(text){
+}catch(error){
 
 
-    const title =
-    document.querySelector(".empty h2");
+console.log(
+"Chats error",
+error
+);
 
 
-    const description =
-    document.querySelector(".empty p");
+}
 
-
-
-    if(title){
-
-        title.innerText = text;
-
-    }
-
-
-
-    if(description){
-
-        description.innerText =
-        "Раздел в разработке";
-
-    }
 
 
 }
@@ -119,28 +187,92 @@ function showMessage(text){
 
 
 
-// Кнопка создания чата
-
-const addChat =
-document.getElementById("addChat");
 
 
 
-if(addChat){
+async function updateUnread(){
 
 
-    addChat.addEventListener(
-        "click",
-        ()=>{
+
+try{
 
 
-            showMessage(
-                "Новый чат"
-            );
+const res =
+await fetch(
+
+API+
+"/api/notifications/unread",
+
+{
+
+headers:{
+
+Authorization:
+
+"Bearer "+token
+
+}
+
+}
+
+);
 
 
-        }
-    );
+
+const data =
+await res.json();
+
+
+
+
+const badge =
+document.getElementById(
+"globalUnread"
+);
+
+
+
+
+
+if(
+badge &&
+data.success
+){
+
+
+if(data.count>0){
+
+
+badge.innerText =
+data.count;
+
+
+badge.style.display =
+"block";
+
+
+}else{
+
+
+badge.style.display =
+"none";
+
+
+}
+
+
+}
+
+
+
+}catch(e){
+
+
+console.log(e);
+
+
+}
+
 
 
 }
@@ -150,59 +282,46 @@ if(addChat){
 
 
 
-// Поиск
-
-const searchBtn =
-document.getElementById("searchBtn");
 
 
 
-if(searchBtn){
+document
+
+.getElementById("addChat")
+
+?.addEventListener(
+
+"click",
+
+()=>{
 
 
-    searchBtn.addEventListener(
-        "click",
-        ()=>{
-
-
-            showMessage(
-                "Поиск"
-            );
-
-
-        }
-    );
+location.href=
+"contacts.html";
 
 
 }
 
+);
 
 
 
 
 
-// Настройки
-
-const settingsBtn =
-document.getElementById("settingsBtn");
 
 
 
-if(settingsBtn){
+
+setInterval(
+
+updateUnread,
+
+5000
+
+);
 
 
-    settingsBtn.addEventListener(
-        "click",
-        ()=>{
 
+loadChats();
 
-            showMessage(
-                "Настройки"
-            );
-
-
-        }
-    );
-
-
-}
+updateUnread();

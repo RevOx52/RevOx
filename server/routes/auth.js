@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
 require("dotenv").config();
 
 const sendCode = require("../mail");
@@ -8,82 +9,139 @@ const database = require("../database");
 
 const router = express.Router();
 
+
 const codes = {};
 
 
+
+
+
 // Проверка email
+
 router.post("/check", async(req,res)=>{
 
-    const { email } = req.body;
+
+    const {
+        email
+    } = req.body;
+
+
 
     if(!email){
+
         return res.status(400).json({
+
             success:false,
+
             message:"Email required"
+
         });
+
     }
+
+
+
 
     try{
 
-        const users = await database.query(
-            "SELECT id FROM users WHERE email=?",
-            [email]
-        );
+
+        const users =
+        await database.query(`
+
+        SELECT id
+
+        FROM users
+
+        WHERE email='${email}'
+
+        `);
+
+
 
         res.json({
-            exists: users.length > 0
+
+            exists:
+            users.length > 0
+
         });
+
+
 
     }catch(error){
 
+
         console.log(error);
 
+
         res.status(500).json({
-            success:false,
-            message:"Database error"
+
+            success:false
+
         });
 
+
     }
+
 
 });
 
 
+
+
+
+
+
+
 // Отправка кода
+
 router.post("/register", async(req,res)=>{
 
-    const { email } = req.body;
+
+    const {
+        email
+    } = req.body;
+
 
 
     if(!email){
 
         return res.status(400).json({
+
             success:false,
+
             message:"Email required"
+
         });
 
     }
 
 
-    const code = Math.floor(
-        100000 + Math.random() * 900000
+
+
+    const code =
+    Math.floor(
+        100000 +
+        Math.random()*900000
     );
 
 
-    codes[email] = {
+
+    codes[email]={
+
 
         code:String(code),
 
-        expires:Date.now()+300000
+
+        expires:
+        Date.now()+300000
+
 
     };
 
 
-    try{
 
-        console.log(
-            "Sending code to:",
-            email
-        );
+
+    try{
 
 
         await sendCode(
@@ -92,18 +150,18 @@ router.post("/register", async(req,res)=>{
         );
 
 
+
         res.json({
 
-            success:true,
-
-            message:"Code sent"
+            success:true
 
         });
 
 
+
     }catch(error){
 
-        console.log("MAIL ERROR:");
+
         console.log(error);
 
 
@@ -115,22 +173,35 @@ router.post("/register", async(req,res)=>{
 
         });
 
+
     }
+
 
 });
 
 
+
+
+
+
+
+
+
 // Проверка кода
+
 router.post("/verify",(req,res)=>{
 
 
     const {
         email,
         code
-    } = req.body;
+    }=req.body;
 
 
-    const saved = codes[email];
+
+    const saved =
+    codes[email];
+
 
 
     if(!saved){
@@ -146,7 +217,9 @@ router.post("/verify",(req,res)=>{
     }
 
 
+
     if(Date.now()>saved.expires){
+
 
         delete codes[email];
 
@@ -155,14 +228,18 @@ router.post("/verify",(req,res)=>{
 
             success:false,
 
-            message:"Code expired"
+            message:"Expired"
 
         });
+
 
     }
 
 
+
+
     if(String(code)!==saved.code){
+
 
         return res.status(400).json({
 
@@ -172,10 +249,15 @@ router.post("/verify",(req,res)=>{
 
         });
 
+
     }
 
 
+
+
+
     delete codes[email];
+
 
 
     res.json({
@@ -185,20 +267,39 @@ router.post("/verify",(req,res)=>{
     });
 
 
+
 });
 
 
 
+
+
+
+
+
+
 // Создание аккаунта
-router.post("/set-password",async(req,res)=>{
+
+router.post("/set-password", async(req,res)=>{
 
 
     const {
+
         email,
+
         password,
+
         firstName,
-        lastName
+
+        lastName,
+
+        username,
+
+        avatar
+
     } = req.body;
+
+
 
 
 
@@ -206,8 +307,10 @@ router.post("/set-password",async(req,res)=>{
         !email ||
         !password ||
         !firstName ||
-        !lastName
+        !lastName ||
+        !username
     ){
+
 
         return res.status(400).json({
 
@@ -217,11 +320,17 @@ router.post("/set-password",async(req,res)=>{
 
         });
 
+
     }
 
 
 
+
+
+
+
     try{
+
 
 
         const hash =
@@ -232,45 +341,81 @@ router.post("/set-password",async(req,res)=>{
 
 
 
-        const result =
-        await database.run(
 
-        `INSERT OR REPLACE INTO users
+        await database.run(`
+
+        INSERT INTO users
+
         (
-        email,
-        first_name,
-        last_name,
-        password,
-        created_at
-        )
-        VALUES (?,?,?,?,?)`,
 
-        [
             email,
-            firstName,
-            lastName,
-            hash,
-            new Date().toISOString()
-        ]
 
-        );
+            username,
+
+            first_name,
+
+            last_name,
+
+            avatar,
+
+            password,
+
+            created_at
+
+        )
+
+
+        VALUES
+
+        (
+
+            '${email}',
+
+            '${username}',
+
+            '${firstName}',
+
+            '${lastName}',
+
+            '${avatar || ""}',
+
+            '${hash}',
+
+            '${new Date().toISOString()}'
+
+        )
+
+
+        `);
+
+
+
+
 
 
 
         const token =
         jwt.sign(
 
-        {
-            email:email
-        },
+            {
 
-        process.env.JWT_SECRET,
+                email
 
-        {
-            expiresIn:"30d"
-        }
+            },
+
+            process.env.JWT_SECRET,
+
+
+            {
+
+                expiresIn:"5y"
+
+            }
+
 
         );
+
+
 
 
 
@@ -278,11 +423,12 @@ router.post("/set-password",async(req,res)=>{
 
             success:true,
 
-            message:"Account created",
-
             token
 
         });
+
+
+
 
 
 
@@ -296,7 +442,7 @@ router.post("/set-password",async(req,res)=>{
 
             success:false,
 
-            message:"Database error"
+            message:"Account error"
 
         });
 
@@ -307,14 +453,23 @@ router.post("/set-password",async(req,res)=>{
 });
 
 
+
+
+
+
+
+
+
 // Login
-router.post("/login",async(req,res)=>{
+
+router.post("/login", async(req,res)=>{
 
 
     const {
         email,
         password
-    } = req.body;
+    }=req.body;
+
 
 
 
@@ -322,26 +477,29 @@ router.post("/login",async(req,res)=>{
 
 
         const users =
-        await database.query(
+        await database.query(`
 
-        "SELECT * FROM users WHERE email=?",
+        SELECT *
 
-        [email]
+        FROM users
 
-        );
+        WHERE email='${email}'
+
+        `);
+
+
 
 
         if(users.length===0){
 
             return res.status(404).json({
 
-                success:false,
-
-                message:"User not found"
+                success:false
 
             });
 
         }
+
 
 
 
@@ -349,20 +507,26 @@ router.post("/login",async(req,res)=>{
         users[0];
 
 
+
+
         const match =
         await bcrypt.compare(
+
             password,
+
             user.password
+
         );
+
+
+
 
 
         if(!match){
 
             return res.status(401).json({
 
-                success:false,
-
-                message:"Wrong password"
+                success:false
 
             });
 
@@ -370,21 +534,32 @@ router.post("/login",async(req,res)=>{
 
 
 
+
+
         const token =
         jwt.sign(
 
         {
+
             id:user.id,
+
             email:user.email
+
         },
 
         process.env.JWT_SECRET,
 
+
         {
-            expiresIn:"30d"
+
+            expiresIn:"5y"
+
         }
 
+
         );
+
+
 
 
 
@@ -400,23 +575,29 @@ router.post("/login",async(req,res)=>{
 
 
 
+
+
     }catch(error){
+
 
         console.log(error);
 
 
         res.status(500).json({
 
-            success:false,
-
-            message:"Server error"
+            success:false
 
         });
+
 
     }
 
 
 });
+
+
+
+
 
 
 module.exports = router;

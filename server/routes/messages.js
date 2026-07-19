@@ -1,127 +1,311 @@
 const express = require("express");
+
 const database = require("../database");
+
 const auth = require("../middleware/auth");
+
+const firebase = require("../firebase");
+
 
 const router = express.Router();
 
 
+
+
+
+
+
 // отправка сообщения
+
 router.post("/send", auth, async(req,res)=>{
 
-    const {
-        chatId,
-        text
-    } = req.body;
 
+const {
 
-    if(!chatId || !text){
+chatId,
 
-        return res.status(400).json({
+text
 
-            success:false,
-
-            message:"Chat id and text required"
-
-        });
-
-    }
-
-
-    try{
-
-
-        const db = database.getDB();
-
-
-
-        db.run(
-            `
-            INSERT INTO messages
-            (
-                chat_id,
-                sender_id,
-                text,
-                created_at
-            )
-            VALUES
-            (?,?,?,?)
-            `,
-            [
-                chatId,
-                req.user.id,
-                text,
-                new Date().toISOString()
-            ]
-        );
-
-
-
-        database.saveDatabase();
-
-
-
-        const message = {
-
-            chatId: chatId,
-
-            senderId: req.user.id,
-
-            text: text,
-
-            createdAt: new Date().toISOString()
-
-        };
-
-
-
-        // отправка через Socket.io
-
-        if(req.io){
-
-            req.io
-            .to("chat_" + chatId)
-            .emit(
-                "new_message",
-                message
-            );
-
-        }
+}=req.body;
 
 
 
 
-        res.json({
 
-            success:true,
-
-            message:"Message sent",
-
-            data:message
-
-        });
+if(!chatId || !text){
 
 
+return res.status(400).json({
 
-    }catch(error){
+success:false,
+
+message:"Data required"
+
+});
 
 
-        console.log(error);
+}
 
 
 
-        res.status(500).json({
-
-            success:false,
-
-            message:"Server error"
-
-        });
 
 
-    }
+
+
+try{
+
+
+
+const time =
+
+new Date().toISOString();
+
+
+
+
+
+
+await database.run(`
+
+INSERT INTO messages
+
+(
+
+chat_id,
+
+sender_id,
+
+text,
+
+created_at,
+
+read
+
+)
+
+VALUES
+
+(
+
+${chatId},
+
+${req.user.id},
+
+'${text.replace(/'/g,"''")}',
+
+'${time}',
+
+0
+
+)
+
+`);
+
+
+
+
+
+
+
+
+const message =
+
+await database.query(`
+
+SELECT *
+
+FROM messages
+
+ORDER BY id DESC
+
+LIMIT 1
+
+`);
+
+
+
+
+
+const data = message[0];
+
+
+
+
+
+
+
+
+if(req.io){
+
+
+req.io
+
+.to("chat_"+chatId)
+
+.emit(
+
+"new_message",
+
+data
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+// найти получателя
+
+const users =
+
+await database.query(`
+
+SELECT user_id
+
+FROM chat_members
+
+WHERE chat_id=${chatId}
+
+AND user_id!=${req.user.id}
+
+`);
+
+
+
+
+
+
+
+
+
+for(const user of users){
+
+
+
+const receiver =
+
+await database.query(`
+
+SELECT push_token
+
+FROM users
+
+WHERE id=${user.user_id}
+
+`);
+
+
+
+
+
+const pushToken =
+
+receiver[0]?.push_token;
+
+
+
+
+
+
+
+if(pushToken){
+
+
+
+await firebase.messaging().send({
+
+
+
+token:pushToken,
+
+
+
+notification:{
+
+
+title:"🦆 RevOx",
+
+
+body:text
+
+
+
+},
+
+
+
+data:{
+
+
+chatId:String(chatId)
+
+
+}
+
 
 
 });
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+res.json({
+
+success:true,
+
+message:data
+
+});
+
+
+
+
+
+
+
+}catch(error){
+
+
+
+console.log(error);
+
+
+
+res.status(500).json({
+
+success:false
+
+});
+
+
+
+}
+
+
+
+});
+
+
+
 
 
 
@@ -129,81 +313,65 @@ router.post("/send", auth, async(req,res)=>{
 
 // получить сообщения
 
-router.get("/:chatId", auth, async(req,res)=>{
+router.get("/:chatId",auth,async(req,res)=>{
 
 
-    try{
-
-
-        const db = database.getDB();
+try{
 
 
 
-        const result = db.exec(
-            `
-            SELECT *
-            FROM messages
-            WHERE chat_id=?
-            ORDER BY id ASC
-            `,
-            [
-                req.params.chatId
-            ]
-        );
+const messages =
+
+await database.query(`
+
+SELECT *
+
+FROM messages
+
+WHERE chat_id=${req.params.chatId}
+
+ORDER BY id ASC
+
+`);
 
 
 
-        let messages=[];
 
 
-        if(result.length){
+res.json({
 
-            messages =
-            result[0].values.map(row=>({
+success:true,
 
-                id:row[0],
+messages
 
-                chatId:row[1],
-
-                senderId:row[2],
-
-                text:row[3],
-
-                createdAt:row[4]
-
-            }));
-
-        }
+});
 
 
 
-        res.json({
-
-            success:true,
-
-            messages:messages
-
-        });
 
 
 
-    }catch(error){
+}catch(error){
 
 
-        console.log(error);
+
+res.status(500).json({
+
+success:false
+
+});
 
 
-        res.status(500).json({
+}
 
-            success:false
-
-        });
-
-
-    }
 
 
 });
+
+
+
+
+
 
 
 

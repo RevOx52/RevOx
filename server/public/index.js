@@ -1,55 +1,148 @@
 const API = "https://revox-yuyn.onrender.com";
 
 
-const button = document.getElementById("continue");
-const status = document.getElementById("status");
+const button =
+document.getElementById("continue");
 
 
-button.onclick = async () => {
+const status =
+document.getElementById("status");
 
-    const email = document.getElementById("email").value.trim();
 
-    if (!email) {
-        status.innerText = "Введите email";
+
+button.onclick = async()=>{
+
+
+    const email =
+    document.getElementById("email").value.trim();
+
+
+
+    if(!email){
+
+
+        status.innerText =
+        "Введите email";
+
+
         return;
+
     }
 
-    localStorage.setItem("email", email);
 
-    status.innerText = "Отправляем код...";
 
-    try {
 
-        const response = await fetch(
-            API + "/api/auth/register",
+    status.innerText =
+    "Проверяем аккаунт...";
+
+
+
+
+
+    try{
+
+
+        const response =
+        await fetch(
+
+            API + "/api/auth/check",
+
             {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
+
+                method:"POST",
+
+                headers:{
+
+                    "Content-Type":
+                    "application/json"
+
                 },
-                body: JSON.stringify({
-                    email: email
+
+
+                body:JSON.stringify({
+
+                    email
+
                 })
+
             }
+
         );
 
-        const data = await response.json();
 
-        if (data.success) {
 
-            window.location.href = "verify.html";
 
-        } else {
 
-            status.innerText = data.message || "Ошибка";
+        const data =
+        await response.json();
+
+
+
+
+
+        localStorage.setItem(
+            "email",
+            email
+        );
+
+
+
+
+
+
+        if(data.exists){
+
+
+
+            // Аккаунт уже есть
+
+            status.innerText =
+            "Аккаунт найден";
+
+
+
+            window.location.href =
+            "login.html";
+
+
+
+
+        }else{
+
+
+
+            // Новый пользователь
+
+            status.innerText =
+            "Создаём аккаунт";
+
+
+
+            window.location.href =
+            "verify.html";
+
+
 
         }
 
-    } catch(error) {
+
+
+
+
+    }catch(error){
+
 
         console.log(error);
-        status.innerText = "Ошибка сервера";
+
+
+
+        status.innerText =
+        "Ошибка сервера";
+
 
     }
 
+
+
 };
+

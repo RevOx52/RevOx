@@ -1,105 +1,131 @@
 let io = null;
 
 
-function initSocket(server) {
 
-
-    io = require("socket.io")(server, {
-
-        cors: {
-
-            origin: "*"
-
-        }
-
-    });
+function initSocket(server){
 
 
 
-    io.on("connection", (socket) => {
+io =
+require("socket.io")(server,{
 
+cors:{
 
-        console.log(
-            "RevOx socket connected:",
-            socket.id
-        );
+origin:"*"
 
+}
 
-
-        socket.on(
-            "joinChat",
-            (chatId)=>{
-
-
-                socket.join(
-                    "chat_" + chatId
-                );
-
-
-                console.log(
-                    "Joined chat:",
-                    chatId
-                );
-
-
-            }
-        );
+});
 
 
 
-        socket.on(
-            "disconnect",
-            ()=>{
 
 
-                console.log(
-                    "Socket disconnected:",
-                    socket.id
-                );
+io.on(
+
+"connection",
+
+socket=>{
 
 
-            }
-        );
+console.log(
+"Socket:",
+socket.id
+);
 
 
-    });
 
 
-    return io;
+
+socket.on(
+
+"joinChat",
+
+chatId=>{
+
+
+socket.join(
+
+"chat_"+chatId
+
+);
+
+
+});
+
+
+
+
+
+socket.on(
+
+"disconnect",
+
+()=>{
+
+
+console.log(
+"Socket off:",
+socket.id
+);
+
+
+}
+
+);
+
+
+
+}
+
+);
+
+
+
+
+
+return io;
 
 }
 
 
 
-function sendMessage(
-    chatId,
-    message
-){
 
 
-    if(io){
+function sendMessage(chatId,message){
 
 
-        io.to(
-            "chat_" + chatId
-        )
-        .emit(
-            "message",
-            message
-        );
+if(io){
 
 
-    }
+io.to(
+
+"chat_"+chatId
+
+)
+.emit(
+
+"new_message",
+
+message
+
+);
 
 
 }
 
 
 
-module.exports = {
+}
 
-    initSocket,
 
-    sendMessage
+
+
+
+module.exports={
+
+initSocket,
+
+sendMessage
 
 };

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "889845189312",
+    "project_id": "revox-messenger",
+    "storage_bucket": "revox-messenger.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889845189312:android:4c926eccae1105d89fbb25",
+        "android_client_info": {
+          "package_name": "RevOx.apk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgaXfA-dDhOhZ71BHb4-0PSUYX4WYX5HY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889845189312:android:ddde159b1ffc44699fbb25",
+        "android_client_info": {
+          "package_name": "com.revox.messeger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgaXfA-dDhOhZ71BHb4-0PSUYX4WYX5HY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

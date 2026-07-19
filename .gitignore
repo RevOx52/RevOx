@@ -1,7 +1,3 @@
-node_modules/
-server/node_modules/
-.env
-*.log
-.env
-server/database/users.sqlite
-android/*.jks
+server/serviceAccountKey.json
+server/serviceAccountKey.json
+server/serviceAccountKey.json

@@ -1,5 +1,16 @@
 {
   "appId": "com.revox.messenger",
   "appName": "RevOx Messenger",
-  "webDir": "src"
+  "webDir": "../server/public",
+  "server": {
+    "cleartext": true
+  },
+  "plugins": {
+    "Camera": {
+      "permissions": [
+        "camera",
+        "photos"
+      ]
+    }
+  }
 }

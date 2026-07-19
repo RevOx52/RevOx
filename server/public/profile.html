@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 
 <head>
@@ -7,156 +8,114 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>RevOx — Профиль</title>
+
+<title>RevOx Профиль</title>
 
 
-<link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="css/base.css">
+
+<link rel="stylesheet" href="css/profile.css">
 
 
 </head>
 
 
+
 <body>
 
 
-<div class="auth">
+<div class="profile-page">
 
 
-<div class="auth-card">
 
+<header class="profile-top">
 
+<button onclick="history.back()">
 
-<div class="avatar-section">
-
-
-<div class="avatar-wrapper">
-
-
-<img id="avatarPreview">
-
-
-<div id="avatarLetter">
-?
-</div>
-
-
-</div>
-
-
-
-
-<label for="avatar" class="avatar-button">
-
-Добавить фото
-
-</label>
-
-
-
-<input
-
-id="avatar"
-
-type="file"
-
-accept="image/*"
-
-hidden
-
->
-
-
-
-</div>
-
-
-
-
-
-
-
-<h1>
-Ваш профиль
-</h1>
-
-
-
-
-<p class="subtitle">
-Расскажите о себе
-</p>
-
-
-
-
-
-
-
-
-<input
-
-id="firstName"
-
-type="text"
-
-placeholder="Имя"
-
-autocomplete="given-name"
-
->
-
-
-
-
-
-
-<input
-
-id="lastName"
-
-type="text"
-
-placeholder="Фамилия"
-
-autocomplete="family-name"
-
->
-
-
-
-
-
-
-
-<button
-
-class="main-btn"
-
-id="continue"
-
->
-
-Продолжить
+←
 
 </button>
 
 
+<h2>
+
+Профиль
+
+</h2>
+
+
+</header>
 
 
 
 
 
-<p id="status" class="status"></p>
 
 
+<div class="profile-card">
+
+
+
+
+
+<div class="avatar-box" id="changeAvatar">
+
+
+
+<img
+
+id="avatar"
+
+style="display:none"
+
+>
+
+
+
+<div
+
+id="avatarLetter"
+
+class="avatar-letter"
+
+>
+
+?
+
+</div>
 
 
 
 </div>
 
 
+
+
+
+
+
+
+<h2 id="name">
+
+Загрузка...
+
+</h2>
+
+
+
+<p id="email">
+
+</p>
+
+
+
 </div>
 
+
+
+
+
+</div>
 
 
 

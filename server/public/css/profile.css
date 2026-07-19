@@ -1,23 +1,181 @@
-.profile-title{
+.profile-page{
 
-    font-size:30px;
+min-height:100vh;
 
-    margin-bottom:15px;
+background:#090a0d;
 
-}
-
-
-.profile-description{
-
-    color:#aaa;
-
-    margin-bottom:25px;
+color:white;
 
 }
 
 
-.profile-button{
 
-    margin-top:25px;
+
+
+.profile-top{
+
+height:60px;
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+padding:0 15px;
+
+background:#111318;
+
+border-bottom:1px solid #20242b;
 
 }
+
+
+
+.profile-top button{
+
+background:none;
+
+border:0;
+
+color:white;
+
+font-size:26px;
+
+}
+
+
+
+
+
+.profile-card{
+
+margin-top:40px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+padding:25px;
+
+background:
+
+linear-gradient(
+
+145deg,
+
+#171a22,
+
+#0d0f13
+
+);
+
+
+border-radius:25px;
+
+margin-left:15px;
+
+margin-right:15px;
+
+}
+
+
+
+
+
+.avatar-box{
+
+width:120px;
+
+height:120px;
+
+border-radius:50%;
+
+overflow:hidden;
+
+background:#1877ff;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border:3px solid #2d8cff;
+
+cursor:pointer;
+
+box-shadow:
+
+0 0 25px
+
+rgba(24,119,255,.35);
+
+}
+
+
+
+
+
+.avatar-box img{
+
+width:100%;
+
+height:100%;
+
+object-fit:cover;
+
+border-radius:50%;
+
+}
+
+
+
+
+
+.avatar-letter{
+
+width:100%;
+
+height:100%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:50px;
+
+font-weight:bold;
+
+color:white;
+
+}
+
+
+
+
+
+#name{
+
+margin-top:20px;
+
+font-size:24px;
+
+}
+
+
+
+
+
+#email{
+
+opacity:.6;
+
+font-size:15px;
+
+}
+
