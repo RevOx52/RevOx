@@ -6,10 +6,6 @@
     "cleartext": true
   },
   "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0,
-      "launchAutoHide": true
-    },
     "Camera": {
       "permissions": [
         "camera",
