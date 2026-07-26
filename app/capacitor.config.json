@@ -1,7 +1,7 @@
 {
   "appId": "com.revox.messenger",
   "appName": "RevOx Messenger",
-  "webDir": "www",
+  "webDir": "..server/public",
   "server": {
     "cleartext": true
   },
