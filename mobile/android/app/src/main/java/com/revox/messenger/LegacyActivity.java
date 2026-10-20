@@ -2,5 +2,5 @@ package com.revox.messenger;
 
 import com.getcapacitor.BridgeActivity;
 
-public class MainActivity extends BridgeActivity {
+public class LegacyActivity extends BridgeActivity {
 }
