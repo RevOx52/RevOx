@@ -2,32 +2,28 @@ require("dotenv").config();
 
 const { Resend } = require("resend");
 
+const apiKey = process.env.RESEND_API_KEY;
+const resend = apiKey ? new Resend(apiKey) : null;
 
-const resend = new Resend(
-    process.env.RESEND_API_KEY
-);
-
-
-
-module.exports = async function sendCode(email, code){
-
-    console.log("Sending code to:", email);
-
+module.exports = async function sendCode(email, code) {
+    if (!resend) {
+        throw new Error(
+            "Email service is not configured: RESEND_API_KEY is missing"
+        );
+    }
 
     const result = await resend.emails.send({
-
         from: "RevOx <onboarding@resend.dev>",
-
         to: email,
-
         subject: "RevOx verification code",
-
-        text:
-        `Your RevOx verification code: ${code}`
-
+        text: `Your RevOx verification code: ${code}`
     });
 
+    if (result.error) {
+        console.error("Email delivery failed:", result.error.message);
+        throw new Error("Could not send verification email");
+    }
 
-    console.log("Code sent!", result);
-
+    console.log("Verification email accepted by Resend");
+    return result;
 };

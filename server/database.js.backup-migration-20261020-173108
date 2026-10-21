@@ -1,0 +1,154 @@
+const initSqlJs = require("sql.js");
+const fs = require("fs");
+const path = require("path");
+
+const dbPath = path.resolve(process.cwd(), "users.db");
+
+let SQL;
+let db;
+let initPromise;
+
+function saveDatabase() {
+    if (!db) {
+        throw new Error("Database is not initialized");
+    }
+
+    const data = db.export();
+
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+
+    const tempPath = `${dbPath}.tmp`;
+    fs.writeFileSync(tempPath, Buffer.from(data));
+    fs.renameSync(tempPath, dbPath);
+}
+
+async function init() {
+    if (db) return;
+
+    if (initPromise) {
+        await initPromise;
+        return;
+    }
+
+    initPromise = (async () => {
+        SQL = await initSqlJs({
+            locateFile: (file) =>
+                path.join(path.dirname(require.resolve("sql.js")), file)
+        });
+
+        if (fs.existsSync(dbPath)) {
+            const file = fs.readFileSync(dbPath);
+
+            try {
+                db = new SQL.Database(file);
+            } catch (error) {
+                throw new Error(
+                    `Cannot open existing SQLite database at ${dbPath}: ${error.message}`
+                );
+            }
+        } else {
+            db = new SQL.Database();
+        }
+
+        db.run(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                username TEXT UNIQUE,
+                first_name TEXT,
+                last_name TEXT,
+                avatar TEXT,
+                password TEXT,
+                created_at TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS chats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                created_at TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS chat_members (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                chat_id INTEGER,
+                user_id INTEGER,
+                last_read INTEGER DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                chat_id INTEGER,
+                sender_id INTEGER,
+                text TEXT,
+                created_at TEXT,
+                read INTEGER DEFAULT 0
+            );
+        `);
+
+        const userColumns = db.exec("PRAGMA table_info(users)");
+        const hasPushToken =
+            userColumns.length > 0 &&
+            userColumns[0].values.some((row) => row[1] === "push_token");
+
+        if (!hasPushToken) {
+            db.run("ALTER TABLE users ADD COLUMN push_token TEXT");
+        }
+
+        saveDatabase();
+    })();
+
+    try {
+        await initPromise;
+    } catch (error) {
+        db = undefined;
+        throw error;
+    } finally {
+        initPromise = undefined;
+    }
+}
+
+function query(sql) {
+    if (!db) {
+        return Promise.reject(
+            new Error("Database is not initialized. Call database.init() first.")
+        );
+    }
+
+    try {
+        const statement = db.prepare(sql);
+        const rows = [];
+
+        try {
+            while (statement.step()) {
+                rows.push(statement.getAsObject());
+            }
+        } finally {
+            statement.free();
+        }
+
+        return Promise.resolve(rows);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+function run(sql) {
+    if (!db) {
+        return Promise.reject(
+            new Error("Database is not initialized. Call database.init() first.")
+        );
+    }
+
+    try {
+        db.run(sql);
+        saveDatabase();
+        return Promise.resolve(true);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+module.exports = {
+    init,
+    query,
+    run
+};

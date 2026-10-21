@@ -1,0 +1,476 @@
+package com.revox.messenger
+
+import android.os.Bundle
+import android.content.Context
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+
+private const val API = "https://revox-yuyn.onrender.com"
+private const val PREFS = "revox_session"
+private const val TOKEN_KEY = "token"
+
+private val Bg = Color(0xFF090711)
+private val Panel = Color(0xFF151122)
+private val Purple = Color(0xFFAC7CFF)
+private val MainText = Color(0xFFF5F0FF)
+private val Muted = Color(0xFF968DAA)
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            MaterialTheme(
+                colorScheme = darkColorScheme(
+                    primary = Purple,
+                    background = Bg,
+                    surface = Panel,
+                    onBackground = MainText,
+                    onSurface = MainText
+                )
+            ) {
+                RevOxApp(this)
+            }
+        }
+    }
+}
+
+private suspend fun request(
+    path: String,
+    method: String = "GET",
+    body: JSONObject? = null,
+    token: String? = null
+): JSONObject = withContext(Dispatchers.IO) {
+    val connection = (URL("$API$path").openConnection() as HttpURLConnection)
+
+    try {
+        connection.requestMethod = method
+        connection.connectTimeout = 20000
+        connection.readTimeout = 20000
+        connection.setRequestProperty("Accept", "application/json")
+
+        if (body != null) {
+            connection.doOutput = true
+            connection.setRequestProperty(
+                "Content-Type",
+                "application/json; charset=utf-8"
+            )
+        }
+
+        if (!token.isNullOrBlank()) {
+            connection.setRequestProperty(
+                "Authorization",
+                "Bearer $token"
+            )
+        }
+
+        if (body != null) {
+            connection.outputStream.use {
+                it.write(body.toString().toByteArray(Charsets.UTF_8))
+            }
+        }
+
+        val status = connection.responseCode
+        val stream = if (status in 200..299) {
+            connection.inputStream
+        } else {
+            connection.errorStream
+        }
+
+        val text = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
+        val result = try {
+            JSONObject(text)
+        } catch (_: Exception) {
+            JSONObject().put("message", "Server returned an invalid response")
+        }
+
+        if (status !in 200..299) {
+            throw Exception(
+                result.optString("message").ifBlank {
+                    "Request failed (HTTP $status)"
+                }
+            )
+        }
+
+        result
+    } finally {
+        connection.disconnect()
+    }
+}
+
+@Composable
+private fun RevOxApp(context: Context) {
+    val prefs = remember {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    }
+    var token by remember { mutableStateOf(prefs.getString(TOKEN_KEY, null)) }
+    var screen by remember { mutableStateOf(if (token.isNullOrBlank()) "email" else "home") }
+    var email by remember { mutableStateOf("") }
+    var code by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var profileName by remember { mutableStateOf("") }
+    var profileEmail by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
+    var loading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    fun saveSession(newToken: String) {
+        prefs.edit().putString(TOKEN_KEY, newToken).apply()
+        token = newToken
+        screen = "home"
+        message = ""
+    }
+
+    LaunchedEffect(token) {
+        val currentToken = token
+        if (!currentToken.isNullOrBlank()) {
+            try {
+                val result = request(
+                    "/api/user/me",
+                    token = currentToken
+                )
+                val user = result.optJSONObject("user")
+                profileName = user?.optString("first_name").orEmpty()
+                profileEmail = user?.optString("email").orEmpty()
+                if (profileName.isBlank()) profileName = profileEmail
+                screen = "home"
+            } catch (_: Exception) {
+                prefs.edit().remove(TOKEN_KEY).apply()
+                token = null
+                screen = "email"
+                message = "Сессия истекла. Войди снова."
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Bg)
+            .padding(22.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "R",
+                fontSize = 64.sp,
+                fontWeight = FontWeight.Black,
+                color = Purple
+            )
+            Text(
+                text = "RevOx",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = MainText
+            )
+            Text(
+                text = "YOUR SPACE. YOUR PEOPLE.",
+                fontSize = 11.sp,
+                color = Muted,
+                letterSpacing = 2.sp
+            )
+
+            Spacer(Modifier.height(30.dp))
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                color = Panel
+            ) {
+                Column(
+                    modifier = Modifier.padding(22.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    when (screen) {
+                        "email" -> {
+                            Text(
+                                "Вход в RevOx",
+                                fontSize = 23.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                "Введи почту — отправим код подтверждения.",
+                                color = Muted
+                            )
+                            RevOxField(
+                                value = email,
+                                onValueChange = { email = it },
+                                label = "Электронная почта",
+                                keyboardType = KeyboardType.Email
+                            )
+                            RevOxButton(
+                                text = "Получить код",
+                                loading = loading
+                            ) {
+                                scope.launch {
+                                    loading = true
+                                    message = ""
+                                    try {
+                                        val normalized = email.trim().lowercase()
+                                        request(
+                                            "/api/auth/register",
+                                            "POST",
+                                            JSONObject().put("email", normalized)
+                                        )
+                                        email = normalized
+                                        screen = "code"
+                                        message = "Код отправлен на почту."
+                                    } catch (e: Exception) {
+                                        message = e.message ?: "Не удалось отправить код"
+                                    } finally {
+                                        loading = false
+                                    }
+                                }
+                            }
+                        }
+
+                        "code" -> {
+                            Text(
+                                "Подтверди почту",
+                                fontSize = 23.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(email, color = Muted)
+                            RevOxField(
+                                value = code,
+                                onValueChange = {
+                                    code = it.filter(Char::isDigit).take(6)
+                                },
+                                label = "Код из письма",
+                                keyboardType = KeyboardType.Number
+                            )
+                            RevOxButton(
+                                text = "Подтвердить",
+                                loading = loading
+                            ) {
+                                scope.launch {
+                                    loading = true
+                                    message = ""
+                                    try {
+                                        val result = request(
+                                            "/api/auth/verify",
+                                            "POST",
+                                            JSONObject()
+                                                .put("email", email.trim().lowercase())
+                                                .put("code", code.trim())
+                                        )
+
+                                        val newToken = result.optString("token")
+                                        if (newToken.isNotBlank()) {
+                                            val user = result.optJSONObject("user")
+                                            profileName =
+                                                user?.optString("first_name").orEmpty()
+                                            profileEmail =
+                                                user?.optString("email").orEmpty()
+                                            saveSession(newToken)
+                                        } else if (
+                                            result.optBoolean("needsRegistration") ||
+                                            !result.optBoolean("exists", true)
+                                        ) {
+                                            screen = "profile"
+                                            message = "Почта подтверждена. Создай профиль."
+                                        } else {
+                                            message = "Сервер не вернул токен авторизации."
+                                        }
+                                    } catch (e: Exception) {
+                                        message = e.message ?: "Проверка кода не удалась"
+                                    } finally {
+                                        loading = false
+                                    }
+                                }
+                            }
+                            TextButton(onClick = {
+                                screen = "email"
+                                code = ""
+                                message = ""
+                            }) {
+                                Text("Назад")
+                            }
+                        }
+
+                        "profile" -> {
+                            Text(
+                                "Создай профиль",
+                                fontSize = 23.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(email, color = Muted)
+                            RevOxField(
+                                value = firstName,
+                                onValueChange = { firstName = it },
+                                label = "Как тебя зовут"
+                            )
+                            RevOxField(
+                                value = lastName,
+                                onValueChange = { lastName = it },
+                                label = "Фамилия (необязательно)"
+                            )
+                            RevOxButton(
+                                text = "Создать аккаунт",
+                                loading = loading
+                            ) {
+                                scope.launch {
+                                    loading = true
+                                    message = ""
+                                    try {
+                                        val result = request(
+                                            "/api/auth/complete-registration",
+                                            "POST",
+                                            JSONObject()
+                                                .put("email", email.trim().lowercase())
+                                                .put("firstName", firstName.trim())
+                                                .put("lastName", lastName.trim())
+                                        )
+                                        val newToken = result.optString("token")
+                                        if (newToken.isBlank()) {
+                                            throw Exception("Сервер не вернул токен")
+                                        }
+                                        profileName = firstName.trim()
+                                        profileEmail = email.trim().lowercase()
+                                        saveSession(newToken)
+                                    } catch (e: Exception) {
+                                        message = e.message ?: "Регистрация не удалась"
+                                    } finally {
+                                        loading = false
+                                    }
+                                }
+                            }
+                        }
+
+                        else -> {
+                            Text(
+                                "Ты в RevOx",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                profileName.ifBlank { "Добро пожаловать!" },
+                                fontSize = 18.sp,
+                                color = Purple
+                            )
+                            Text(
+                                profileEmail,
+                                color = Muted
+                            )
+                            HorizontalDivider(color = Color(0xFF302441))
+                            Text(
+                                "Сессия сохранена. Следующий этап — подключение чатов.",
+                                color = Muted
+                            )
+                            RevOxButton(
+                                text = "Выйти",
+                                loading = false
+                            ) {
+                                prefs.edit().remove(TOKEN_KEY).apply()
+                                token = null
+                                screen = "email"
+                                email = ""
+                                code = ""
+                                message = ""
+                            }
+                        }
+                    }
+
+                    if (message.isNotBlank()) {
+                        Text(
+                            text = message,
+                            color = if (
+                                message.contains("не удалось", true) ||
+                                message.contains("ошиб", true) ||
+                                message.contains("failed", true) ||
+                                message.contains("expired", true)
+                            ) Color(0xFFFF8C9A) else Purple,
+                            fontSize = 13.sp
+                        )
+                    }
+
+                    if (loading) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Purple
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+            Text("RevOx • Connect differently", color = Muted, fontSize = 12.sp)
+        }
+    }
+}
+
+@Composable
+private fun RevOxField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    keyboardType: KeyboardType = KeyboardType.Text
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Purple,
+            unfocusedBorderColor = Color(0xFF302441),
+            focusedLabelColor = Purple,
+            cursorColor = Purple,
+            focusedTextColor = MainText,
+            unfocusedTextColor = MainText
+        )
+    )
+}
+
+@Composable
+private fun RevOxButton(
+    text: String,
+    loading: Boolean,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        enabled = !loading,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Purple,
+            contentColor = Color(0xFF120B20)
+        )
+    ) {
+        Text(text, fontWeight = FontWeight.Bold)
+    }
+}
